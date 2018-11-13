@@ -23,3 +23,8 @@ popularidad("Bleach",8).
 popularidad("HunterXHunter",3).
 popularidad("Hamtaro",10).
 popularidad("Full Metal Alchemist",1).
+
+% Esto podria servirnos para leer
+readTokens(Tokens) :- 
+    current_input(Stream),
+    read_line_to_string(Stream, String), write(String), split_string(String, " \t", "\n\r\t", Tokens).
