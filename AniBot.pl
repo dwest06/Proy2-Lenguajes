@@ -48,6 +48,15 @@ popularidad("Full Metal Alchemist",1).
 
 % Reglas de Bot
 
+% Popularidad a String (La Popularidad puede ser un numero en un string)
+popularidad_string(PString, Resp) :- 
+    string(PString), !, atom_number(PString, P), !, popularidad_string(P, Resp).
+popularidad_string(P, "Muy poco conocido") :- 0 < P, P < 3, !.
+popularidad_string(P, "Poco conocido") :- 2 < P, P < 6, !.
+popularidad_string(P, "Conocido") :- 5 < P, P < 8, !.
+popularidad_string(P, "Muy conocido") :- 7 < P, P < 10, !.
+popularidad_string(10, "Bastante conocido") :- !.
+
 % Obtener los primeros N elementos de una lista
 trim(_, 0, []).
 trim([H|T1], N, [H|T2]) :- trim(T1, N1, T2), N is N1+1.
