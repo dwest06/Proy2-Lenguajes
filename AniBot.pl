@@ -1,7 +1,29 @@
+/*
 anime(X) :- member(X,["Dragon Ball", "Naruto", "Bleach", "HunterXHunter", "Hamtaro", "Full Metal Alchemist"]).
 
 genero(X) :- member(X,["Aventura", "Shoujo", "Shounen", "Kodomo", "Seinen", "Josei", "Ficción",
                     "Fantasía", "Mecha", "Sobrenatural", "Magia", "Gore"]).
+*/
+
+anime("Naruto").
+anime("Dragon Ball").
+anime("Bleach").
+anime("HunterXHunter").
+anime("Hamtaro").
+anime("Full Metal Alchemist").
+
+genero("Aventura").
+genero("Shoujo").
+genero("Shounen").
+genero("Kodomo").
+genero("Seinen").
+genero("Josei").
+genero("Ficción").
+genero("Fantasía").
+genero("Mecha").
+genero("Sobrenatural").
+genero("Magia").
+genero("Gore").
 
 generoAnime("Naruto",["Shounen","Aventura"]).
 generoAnime("Dragon Ball",["Shounen"]).
