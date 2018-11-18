@@ -61,15 +61,25 @@ addGeneros([_|T]) :- addGeneros(T).
 
 % Anadir Anime nuevo, si no existia antes, o actualizar su lista de generos. 
 % Generos tiene que ser no vacio 
+% Manejo de Rating
 % Si no se da popularidad, por default se coloca como 1. 
 % Si no se lee string de Popularidad, se coloca como 1.
 % Si ya el anime tiene popularidad, no se coloca nueva popularidad.
-addAnime(A, GS, PString) :- 
+addAnime(A, GS, RString, PString) :- 
     \+(popularidad(A, _)),
     atom_number(PString, P), !, 
-    addAnime(A, GS), !, 
+    addAnime(A, GS, RString), !, 
     P1 is min(P, 10), P2 is max(P1, 1),
     retract(popularidad(A, 1)), assertz(popularidad(A, P2)), !.
+
+addAnime(A, GS, RString, _) :- addAnime(A, GS, RString), !.
+
+addAnime(A, GS, RString) :- 
+    \+(rating(A, _)),
+    atom_number(RString, R), !, 
+    addAnime(A, GS), !, 
+    R1 is min(R, 5), R2 is max(R1, 1),
+    retract(rating(A, 1)), assertz(rating(A, R2)), !.
 
 addAnime(A, GS, _) :- addAnime(A, GS), !.
 
@@ -79,7 +89,7 @@ addAnime(A, GS) :-
     assertz(anime(A)), addGeneros(GS), 
     Tam is min(L, 5),
     trim(GS, Tam, FirstGenres), 
-    assertz(generoAnime(A, FirstGenres)), assertz(popularidad(A, 1)), !.
+    assertz(generoAnime(A, FirstGenres)), assertz(popularidad(A, 1)), assertz(rating(A, 1)), !.
 
 addAnime(A, GS) :- 
     length(GS, L), 0 < L, !,
