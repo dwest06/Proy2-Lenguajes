@@ -46,6 +46,11 @@ popularidad("HunterXHunter",3).
 popularidad("Hamtaro",10).
 popularidad("Full Metal Alchemist",1).
 
+% Reglas de Bot
+
+
+
+% Lectura de Bot
 % Esto podria servirnos para leer
 readTokens(Tokens) :- 
     current_input(Stream),
