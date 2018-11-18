@@ -48,7 +48,12 @@ popularidad("Full Metal Alchemist",1).
 
 % Reglas de Bot
 
-
+% Anadir Un Genero nuevo, si no existia antes
+addGenero(G) :- \+(genero(G)), !, assertz(genero(G)).
+% Anadir Lista de Generos
+addGeneros([]) :- !.
+addGeneros([N|T]) :- addGenero(N), !, addGeneros(T).
+addGeneros([_|T]) :- addGeneros(T).
 
 % Lectura de Bot
 % Esto podria servirnos para leer
