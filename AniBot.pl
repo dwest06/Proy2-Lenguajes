@@ -48,12 +48,40 @@ popularidad("Full Metal Alchemist",1).
 
 % Reglas de Bot
 
+% Obtener los primeros N elementos de una lista
+trim(_, 0, []).
+trim([H|T1], N, [H|T2]) :- trim(T1, N1, T2), N is N1+1.
+
 % Anadir Un Genero nuevo, si no existia antes
 addGenero(G) :- \+(genero(G)), !, assertz(genero(G)).
 % Anadir Lista de Generos
 addGeneros([]) :- !.
 addGeneros([N|T]) :- addGenero(N), !, addGeneros(T).
 addGeneros([_|T]) :- addGeneros(T).
+
+% Anadir Anime nuevo, si no existia antes, o actualizar su lista de generos. 
+% Generos tiene que ser no vacio 
+addAnime(A, GS) :- 
+    \+(anime(A)), !,
+    length(GS, L), 0 < L, !, 
+    assertz(anime(A)), addGeneros(GS), 
+    Tam is min(L, 5),
+    trim(GS, Tam, FirstGenres), assertz(generoAnime(A, FirstGenres)), !.
+
+addAnime(A, GS) :- 
+    length(GS, L), 0 < L, !,
+    generoAnime(A, GSPrev),
+    addGeneros(GS),
+    append(GSPrev, GS, GSNew),
+    list_to_set(GSNew, GSNoDup),
+    length(GSNoDup, L2), 
+    Tam is min(L2, 5),
+    trim(GSNoDup, Tam, FirstGenres), 
+    retract(generoAnime(A, GSPrev)), assertz(generoAnime(A, FirstGenres)), !.
+
+    
+    
+
 
 % Lectura de Bot
 % Esto podria servirnos para leer
