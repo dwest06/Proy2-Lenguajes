@@ -1,9 +1,6 @@
-/*
-anime(X) :- member(X,["Dragon Ball", "Naruto", "Bleach", "HunterXHunter", "Hamtaro", "Full Metal Alchemist"]).
-
-genero(X) :- member(X,["Aventura", "Shoujo", "Shounen", "Kodomo", "Seinen", "Josei", "Ficción",
-                    "Fantasía", "Mecha", "Sobrenatural", "Magia", "Gore"]).
-*/
+:- dynamic popularidad/2. % Permitir cambiar popularidad
+:- dynamic generoAnime/2. % Permitir cambiar generos de un anime
+% Revisar si nos importa hacer cleanup http://www.swi-prolog.org/howto/database.html
 
 anime("Naruto").
 anime("Dragon Ball").
@@ -56,6 +53,33 @@ popularidad_string(P, "Poco conocido") :- 2 < P, P < 6, !.
 popularidad_string(P, "Conocido") :- 5 < P, P < 8, !.
 popularidad_string(P, "Muy conocido") :- 7 < P, P < 10, !.
 popularidad_string(10, "Bastante conocido") :- !.
+
+% Subir Rating si usuarios preguntan 5 veces.
+preguntar_popularidad(A, P) :- 
+    \+(current_predicate(pregunta_popularidad/2)), !, % Necesario si no existe otro predicado parecido
+    assertz(pregunta_popularidad(A, 1)), !,   
+    popularidad(A, P).
+
+preguntar_popularidad(A, P) :- 
+    \+(pregunta_popularidad(A, _)), !, % No se ha preguntado para este anime
+    assertz(pregunta_popularidad(A, 1)), !,   
+    popularidad(A, P).
+
+preguntar_popularidad(A, P) :- 
+    pregunta_popularidad(A, 4), !,
+    retract(pregunta_popularidad(A, 4)),
+    popularidad(A, P),
+    P1 is min(P+1, 10), !,
+    retract(popularidad(A, P)),
+    assertz(popularidad(A, P1)).
+
+preguntar_popularidad(A, P) :- 
+    pregunta_popularidad(A, N), !,
+    N1 is N+1,
+    retract(pregunta_popularidad(A, N)),
+    assertz(pregunta_popularidad(A, N1)),
+    popularidad(A, P).
+
 
 % Obtener los primeros N elementos de una lista
 trim(_, 0, []).
