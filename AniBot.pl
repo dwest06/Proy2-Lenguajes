@@ -28,3 +28,7 @@ popularidad("Full Metal Alchemist",1).
 readTokens(Tokens) :- 
     current_input(Stream),
     read_line_to_string(Stream, String), write(String), split_string(String, " \t", "\n\r\t", Tokens).
+
+
+%Aqui se hace el loop infinito, Se separa 
+mainn :- write("Bienvenido a AniBot."), nl, readTokens(Z).
