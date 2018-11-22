@@ -136,9 +136,45 @@ addAnime(A, GS) :-
     retract(generoAnime(A, GSPrev)), assertz(generoAnime(A, FirstGenres)), !.
 
     
-    
+% Comparating
+ord_rat(>, A1, A2) :- rating(A1, R1), rating(A2, R2), R1 > R2.
+ord_rat(<, A1, A2) :- rating(A1, R1), rating(A2, R2), R1 < R2.
+ord_rat(=, A1, A2) :- rating(A1, R1), rating(A2, R2), R1 = R2.
 
+ord_pop(>, A1, A2) :- popularidad(A1, P1), popularidad(A2, P2), P1 > P2.
+ord_pop(<, A1, A2) :- popularidad(A1, P1), popularidad(A2, P2), P1 < P2.
+ord_pop(=, A1, A2) :- popularidad(A1, P1), popularidad(A2, P2), P1 = P2.
 
+ord_rat_pop(>, A1, A2) :- 
+    rating(A1, R1), rating(A2, R2),
+    popularidad(A1, P1), popularidad(A2, P2),
+     P1 + R1 > P2 + R2.
+ord_rat_pop(<, A1, A2) :- 
+    rating(A1, R1), rating(A2, R2), 
+    popularidad(A1, P1), popularidad(A2, P2),
+    P1 + R1 < P2 + R2.
+ord_rat_pop(=, A1, A2) :- 
+    rating(A1, R1), rating(A2, R2), 
+    popularidad(A1, P1), popularidad(A2, P2),
+    P1 + R1 = P2 + R2.
+
+% Sorting
+sort_rat(L1, L2) :- predsort(ord_rat, L1 , L2).
+
+sort_pop(L1, L2) :- predsort(ord_pop, L1 , L2).
+
+sort_rat_pop(L1, L2) :- predsort(ord_rat_pop, L1 , L2).
+
+% Genero
+find_gen(G, As) :- findall(A, (generoAnime(A, Gs),member(G, Gs)) , As).
+
+find_gen_rat(G, As) :- find_gen(G, A1s), sort_rat(A1s, As).
+
+find_gen_pop(G, As) :- find_gen(G, A1s), sort_pop(A1s, As).
+
+find_gen_rat_pop(G, As) :- find_gen(G, A1s), sort_rat_pop(A1s, As).
+
+ 
 % Lectura de Bot
 % Esto podria servirnos para leer
 readTokens(Tokens) :- 
