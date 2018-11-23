@@ -186,7 +186,16 @@ filter_rat(R, [_|T1], T2) :- !, filter_rat(R, T1, T2).
 
 % Animes que tenga rating R del genero G
 find_rat_gen(R, G, As) :- find_gen_rat(G, A1s), filter_rat(R, A1s, As).
- 
+
+% Encontrar Animes Buenos (rating de 4 y 5) pero Poco Conocidos (popularidad <= 5)
+ani_buenos(As) :- 
+    findall(A, 
+    (
+        rating(A, R), R > 3, 
+        popularidad(A, P), P =< 5
+    ), 
+    As).
+
 % Lectura de Bot
 % Esto podria servirnos para leer
 readTokens(Tokens) :- 
