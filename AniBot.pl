@@ -136,15 +136,18 @@ addAnime(A, GS) :-
     retract(generoAnime(A, GSPrev)), assertz(generoAnime(A, FirstGenres)), !.
 
     
-% Comparating
+% Comparing
+% Compara dos strings de anime por rating
 ord_rat(>, A1, A2) :- rating(A1, R1), rating(A2, R2), R1 > R2.
 ord_rat(<, A1, A2) :- rating(A1, R1), rating(A2, R2), R1 < R2.
 ord_rat(=, A1, A2) :- rating(A1, R1), rating(A2, R2), R1 = R2.
 
+% Compara dos strings de anime por popularidad
 ord_pop(>, A1, A2) :- popularidad(A1, P1), popularidad(A2, P2), P1 > P2.
 ord_pop(<, A1, A2) :- popularidad(A1, P1), popularidad(A2, P2), P1 < P2.
 ord_pop(=, A1, A2) :- popularidad(A1, P1), popularidad(A2, P2), P1 = P2.
 
+% Compara dos strings de anime por rating y popularidad
 ord_rat_pop(>, A1, A2) :- 
     rating(A1, R1), rating(A2, R2),
     popularidad(A1, P1), popularidad(A2, P2),
@@ -159,20 +162,29 @@ ord_rat_pop(=, A1, A2) :-
     P1 + R1 = P2 + R2.
 
 % Sorting
+% Ordena una lista de strings de anime por rating
 sort_rat(L1, L2) :- predsort(ord_rat, L1 , L2).
 
+% Ordena una lista de strings de anime por popularidad
 sort_pop(L1, L2) :- predsort(ord_pop, L1 , L2).
 
+% Ordena una lista de strings de anime por rating y popularidad
 sort_rat_pop(L1, L2) :- predsort(ord_rat_pop, L1 , L2).
 
-% Genero
+% Animes por Genero
+% Encuentra todos los Animes de un genero G
 find_gen(G, As) :- findall(A, (generoAnime(A, Gs),member(G, Gs)) , As).
 
+% Encuentra todos los Animes de un genero G ordenados por rating
 find_gen_rat(G, As) :- find_gen(G, A1s), sort_rat(A1s, As).
 
+% Encuentra todos los Animes de un genero G ordenados por popularidad
 find_gen_pop(G, As) :- find_gen(G, A1s), sort_pop(A1s, As).
 
+% Encuentra todos los Animes de un genero G ordenados por rating y popularidad
 find_gen_rat_pop(G, As) :- find_gen(G, A1s), sort_rat_pop(A1s, As).
+
+% Animes por Estrellas y Genero
 
  
 % Lectura de Bot
