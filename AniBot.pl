@@ -194,7 +194,7 @@ ani_buenos(As) :-
         rating(A, R), R > 3, 
         popularidad(A, P), P =< 5
     ), 
-    As).
+    A1s), sort_rat(A1s, As).
 
 % Lectura de Bot
 % Esto podria servirnos para leer
