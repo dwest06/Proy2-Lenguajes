@@ -136,15 +136,44 @@ addAnime(A, GS) :-
     retract(generoAnime(A, GSPrev)), assertz(generoAnime(A, FirstGenres)), !.
 
     
+
+
     
+%Palabras a reconocer
+Peticion(["dame", "dime", "muestrame", "recomiendame", "Quiero"]).
+Requerimiento(["rating", "genero", "popularidad"]).
 
 
 % Lectura de Bot
 % Esto podria servirnos para leer
 readTokens(Tokens) :- 
     current_input(Stream),
-    read_line_to_string(Stream, String), write(String), split_string(String, " \t", "\n\r\t", Tokens).
+    read_line_to_string(Stream, String), write(String),nl, split_string(String, " \t", "\n\r\t", Tokens),
+    write(Tokens), nl,
+    procesar_tok(Tokens).
+
+%Si para salir del ciclo
+procesar_tok(["quit"]).
+
+procesar_tok([]):- write("Fin"),nl,main.
+
+%Para reconocer peticiones
+procesar_tok([Tok|Tokens],[Tok]):-
+    write(Tok), nl, procesar_tok(Tokens).
+
+%Para procesar requerimientos
+procesar_tok([Tok|Tokens]):- 
+    write("A").
+
+%Para procesar palabras no reconocidas.
+procesar_tok([_|Tokens]):- 
+    write("A"). 
+    
+
+
 
 
 %Aqui se hace el loop infinito, Se separa 
-mainn :- write("Bienvenido a AniBot."), nl, readTokens(Z).
+main :- write("Bienvenido a AniBot."), nl, readTokens(Z).
+
+
