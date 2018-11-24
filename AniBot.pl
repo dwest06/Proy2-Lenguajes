@@ -196,39 +196,56 @@ ani_buenos(As) :-
 
 
 %Palabras a reconocer
-Peticion(["dame", "dime", "muestrame", "recomiendame", "Quiero"]).
-Requerimiento(["rating", "genero", "popularidad"]).
+peticion(["dame", "dime", "muestrame", "recomiendame", "quiero"]).
+requerimiento(["rating", "genero", "popularidad"]).
 
 % Lectura de Bot
 % Esto podria servirnos para leer
-readTokens(Tokens) :- 
-    current_input(Stream),
-    read_line_to_string(Stream, String), write(String),nl, split_string(String, " \t", "\n\r\t,", Tokens),
-    write(Tokens), nl,
-    procesar_tok(Tokens).
+readTokens:- 
+    %Lee desde el stdin
+    current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t,", Tokens), 
+    % retorna los Tokens necesarios para el parseo
+    procesar_tok(Tokens,[]).
 
-%Si para salir del ciclo
-procesar_tok(["quit"]).
+%Para salir del ciclo
+procesar_tok(["quit"],_).
 
-procesar_tok([]):- write("Fin"),nl,main.
+% Fin del primer procesamiento
+procesar_tok([],Z):- write(Z), nl, main.
 
 %Para reconocer peticiones
-procesar_tok([Tok|Tokens]):-
-    write(Tok), nl, procesar_tok(Tokens).
+procesar_tok([Tok|Tokens],Tokneed):-
+    peticion(P),
+    member(Tok, P),
+    append(Tokneed, [Tok], R),
+    procesar_tok(Tokens, R).
 
-%Para procesar requerimientos
-procesar_tok([Tok|Tokens]):- 
-    write("A").
-
-%Para procesar palabras no reconocidas.
-procesar_tok([_|Tokens]):- 
-    write("A"). 
+%Para reconocer requerimientos
+procesar_tok([Tok|Tokens],Tokneed):-
+    requerimiento(Q),
+    member(Tok, Q),
+    append(Tokneed, [Tok], R),
+    procesar_tok(Tokens, R).
     
 
+%Para reconocer animes
+procesar_tok([Tok|Tokens],Tokneed):-
+    anime(Tok),
+    append(Tokneed, [Tok], R),
+    procesar_tok(Tokens, R).
 
+%Para reconocer genero
+procesar_tok([Tok|Tokens],Tokneed):-
+    genero(Tok),
+    append(Tokneed, [Tok], R),
+    procesar_tok(Tokens, R).
 
+%Para procesar palabras no reconocidas.
+procesar_tok([_|Tokens], Tokneed):- 
+    procesar_tok(Tokens, Tokneed).    
+    
 
 %Aqui se hace el loop infinito, Se separa 
-main :- write("Bienvenido a AniBot."), nl, readTokens(Z).
+main :- write("Bienvenido a AniBot."), nl, readTokens.
 
 
