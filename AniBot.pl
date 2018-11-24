@@ -208,7 +208,7 @@ readTokens:-
     procesar_tok(Tokens,[]).
 
 %Para salir del ciclo
-procesar_tok(["quit"],_).
+procesar_tok(["quit"],_) :- !.
 
 % Fin del primer procesamiento
 procesar_tok([],Z):- write(Z), nl, main.
