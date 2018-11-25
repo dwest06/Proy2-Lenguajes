@@ -249,3 +249,26 @@ procesar_tok([_|Tokens], Tokneed):-
 main :- write("Bienvenido a AniBot."), nl, readTokens, !.
 
 
+% Concatenar una lista de strings con un separador
+% De https://stackoverflow.com/questions/4708235/concatting-a-list-of-strings-in-prolog
+strSepCat([ ],_,Empty) :-
+    string_to_list(Empty,[ ]).
+strSepCat([H|T],Separator,StrCat) :-
+    strSepCat(T,Separator,H,StrCat).
+
+% Concatenar una lista de strings con un separador, mantiene un acumulador
+strSepCat([ ],_,StrCat,StrCat).
+strSepCat([H|T],Sep,Str,Cat) :-
+    string_concat(Sep,H,SepH),
+    string_concat(Str,SepH,StrSepH),
+    strSepCat(T,Sep,StrSepH,Cat).
+
+% Reconoce un anime del prefijo de una lista de tokens y lo devuelve. 
+% Tambien devuelve los siguientes tokens al anime
+recAnime(Tokens, A, NextTokens) :- 
+    append(Part, NextTokens, Tokens), strSepCat(Part, " ", A), anime(A), !.
+
+% Reconoce un genero del prefijo de una lista de tokens y lo devuelve. 
+% Tambien devuelve los siguientes tokens al genero
+recGenero(Tokens, G, NextTokens) :- 
+    append(Part, NextTokens, Tokens), strSepCat(Part, " ", G), genero(G), !.
