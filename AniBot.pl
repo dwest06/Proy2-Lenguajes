@@ -428,6 +428,11 @@ recAnime(Tokens, A, NextTokens) :-
 recGenero(Tokens, G, NextTokens) :- 
     append(Part, NextTokens, Tokens), strSepCat(Part, " ", G), genero(G), !.
 
+% Reconoce un anime nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas"]
+recAnimeNuevo(Tokens, A, NextTokens) :- 
+    append(Part, NextTokens, Tokens), strSepCat(Part, " ", A), 
+    NextTokens = [H1|_], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas"]), !.
+
 % Pretty String de una lista de Generos
 prettyGens(Gs, S) :- 
     strSepCat(Gs, ", ", S1), string_concat("[", S1, S2), string_concat(S2, "]", S), !.
