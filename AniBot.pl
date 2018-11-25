@@ -234,10 +234,10 @@ procesar_tok(Tokens,Tokneed):-
     procesar_tok(NextTokens, R), !.
 
 %Para reconocer genero
-procesar_tok([Tok|Tokens],Tokneed):-
-    genero(Tok),
+procesar_tok(Tokens,Tokneed):-
+    recGenero(Tokens, Tok, NextTokens),
     append(Tokneed, [Tok], R),
-    procesar_tok(Tokens, R), !.
+    procesar_tok(NextTokens, R), !.
 
 %Para procesar palabras no reconocidas.
 procesar_tok([_|Tokens], Tokneed):- 
