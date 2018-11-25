@@ -227,10 +227,10 @@ procesar_tok([Tok|Tokens],Tokneed):-
     procesar_tok(Tokens, R), !.
     
 %Para reconocer animes
-procesar_tok([Tok|Tokens],Tokneed):-
-    anime(Tok),
+procesar_tok(Tokens,Tokneed):-
+    recAnime(Tokens, Tok, NextTokens),
     append(Tokneed, [Tok], R),
-    procesar_tok(Tokens, R), !.
+    procesar_tok(NextTokens, R), !.
 
 %Para reconocer genero
 procesar_tok([Tok|Tokens],Tokneed):-
