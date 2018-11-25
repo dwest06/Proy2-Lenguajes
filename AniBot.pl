@@ -196,27 +196,30 @@ ani_buenos(As) :-
 
 
 %Palabras a reconocer
-peticion(["dame", "dime", "muestrame", "recomiendame", "quiero"]).
-requerimiento(["rating", "genero", "popularidad"]).
+requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "conocidos", "ordenados"]).
+res_genericas(["Que tengas un buen dia", "¿Quiere saber sobre animes?","¿Te gusta el helado?", "¡Que bueno!"]).
 
 % Lectura de Bot
-% Esto podria servirnos para leer
 readTokens:- 
     %Lee desde el stdin
     current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t,", Tokens), 
     % retorna los Tokens necesarios para el parseo
     !, procesar_tok(Tokens,[]).
 
+%Procesamos los Tokens para filtrar las palabras claves.
 %Para salir del ciclo
 procesar_tok(["quit"],_) :- !.
 
 % Fin del primer procesamiento
+<<<<<<< HEAD
+procesar_tok([],Z):- !, write("FIN"), write(Z), nl, parser_tok(Z).
+=======
 procesar_tok([],Z):- write(Z), nl, !, main.
+>>>>>>> 9756b17cdab1e13a9a4a4fbddb6a41cfdc5c51b3
 
-%Para reconocer peticiones
+%Para reconocer numeros
 procesar_tok([Tok|Tokens],Tokneed):-
-    peticion(P),
-    member(Tok, P),
+    atom_number(Tok, _),
     append(Tokneed, [Tok], R),
     procesar_tok(Tokens, R), !.
 
@@ -227,7 +230,6 @@ procesar_tok([Tok|Tokens],Tokneed):-
     append(Tokneed, [Tok], R),
     procesar_tok(Tokens, R), !.
     
-
 %Para reconocer animes
 procesar_tok([Tok|Tokens],Tokneed):-
     anime(Tok),
@@ -242,12 +244,83 @@ procesar_tok([Tok|Tokens],Tokneed):-
 
 %Para procesar palabras no reconocidas.
 procesar_tok([_|Tokens], Tokneed):- 
-    procesar_tok(Tokens, Tokneed), !.    
-    
+    procesar_tok(Tokens, Tokneed).    
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Los Tokens filtrados pasan por "estados" para llegar a la queries indicada.
+%Respuestas Genericas cuando el usuario haga un consulta no valida.
+parser_tok([]):-
+    respuesta_generica, main2.
+
+%Para cuando es genero
+parser_tok([Tok|Tokens]):-
+    genero(Tok),
+    parser_tok2(Tokens, Tok).
+
+%Para cuando es un requerimiento
+parser_tok([Tok|Tokens]):-
+    requerimiento(Tok),
+    parser_tok2(Tokens, Tok).
+
+%Animes buenos segun su popularidad
+parser_tok2([Tok|Tokens], _):-
+    Tok == "poco",
+    ani_buenos(As),
+    write("Estos son los animes buenos pero poco conocidos: "), write(As).
+
+%lista de animes de genero Genero segun el rating
+parser_tok2([Tok|Tokens], Genero):-
+    Tok == "rating",
+    nth0(0, Tokens, Num),
+    atom_number(Num,R),
+    find_rat_gen(R, Genero, As),
+    write("Del genero "), write(Genero), write(" :"), write(As).
+
+%lista de animes de genero Genero ordenados
+parser_tok2([Tok|Tokens], Genero):-
+    Tok == "ordenados",
+    parser_tok3(Tokens, Genero).
+
+parser_tok2([ Tok | _ ], _):-
+    write("Token no reconocido"), nl.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ordenados por rating
+parser_tok3([Tok], Genero):-
+    Tok == "rating",
+    find_gen_rat(Genero,As),
+    write("Del genero "), write(Genero), write(" ordenados por rating:"), write(As).
+
+%Ordenados por popularidad
+parser_tok3([Tok], Genero):-
+    Tok == "rating",
+    find_gen_pop(Genero,As),
+    write("Del genero "), write(Genero), write(" ordenados por popularidad:"), write(As).
+
+% Ordenados por popularidad y rating
+parser_tok3([Tok|_], Genero):-
+    (Tok == "rating"; Tok == "popularidad"),
+    find_gen_rat_pop(Genero,As),
+    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), write(As).
+
+%
+%parser_tok([Tok|Tokens]):-
+%    .
+
+%parser_tok([Tok|_]):-
+%    write("Token no reconocido"),nl.
+
+%parser_tok2([Tok|Tokens]):-
+%    .
+
+
+respuesta_generica:- random_between(0, 3, R), res_genericas(L), nth0(R, L, E), write(E), nl.
+
 
 %Aqui se hace el loop infinito, Se separa 
-main :- write("Bienvenido a AniBot."), nl, readTokens, !.
-
+main2:- readTokens.
+main :- write("Bienvenido a AniBot."), nl, main2,!.
 
 % Concatenar una lista de strings con un separador
 % De https://stackoverflow.com/questions/4708235/concatting-a-list-of-strings-in-prolog
