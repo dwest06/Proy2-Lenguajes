@@ -154,14 +154,23 @@ ord_rat_pop(<, A1, A2) :-
     P1 + R1 =< P2 + R2.
 
 % Sorting
-% Ordena una lista de strings de anime por rating
-sort_rat(L1, L2) :- predsort(ord_rat, L1 , L2).
+% Ordena una lista de strings de anime por rating de mayor a menor
+sort_rat(L1, L3) :- predsort(ord_rat, L1 , L2), reverse(L2, L3).
 
-% Ordena una lista de strings de anime por popularidad
-sort_pop(L1, L2) :- predsort(ord_pop, L1 , L2).
+% Ordena una lista de strings de anime por popularidad de mayor a menor
+sort_pop(L1, L3) :- predsort(ord_pop, L1 , L2), reverse(L2, L3).
 
-% Ordena una lista de strings de anime por rating y popularidad
-sort_rat_pop(L1, L2) :- predsort(ord_rat_pop, L1 , L2).
+% Ordena una lista de strings de anime por rating y popularidad de mayor a menor
+sort_rat_pop(L1, L3) :- predsort(ord_rat_pop, L1 , L2), reverse(L2, L3).
+
+% Ordena una lista de strings de anime por rating de menor a mayor
+sort_rat_rev(L1, L3) :- predsort(ord_rat, L1 , L2), reverse(L2, L3).
+
+% Ordena una lista de strings de anime por popularidad de menor a mayor
+sort_pop_rev(L1, L3) :- predsort(ord_pop, L1 , L2), reverse(L2, L3).
+
+% Ordena una lista de strings de anime por rating y popularidad de menor a mayor
+sort_rat_pop_rev(L1, L3) :- predsort(ord_rat_pop, L1 , L2), reverse(L2, L3).
 
 % Animes por Genero
 % Encuentra todos los Animes de un genero G
@@ -197,7 +206,7 @@ ani_buenos(As) :-
 
 %Palabras a reconocer
 
-requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "ordenados"]).
+requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "ordenados", "menor"]).
 res_genericas(["Que tengas un buen dia", "Quiere saber sobre animes?","Te gusta el helado?", "Que bueno!"]).
 
 % Lectura de Bot
@@ -223,8 +232,9 @@ procesar_tok([Tok|Tokens],Tokneed):-
 %Para reconocer requerimientos
 procesar_tok([Tok|Tokens],Tokneed):-
     requerimiento(Q),
-    member(Tok, Q),
-    append(Tokneed, [Tok], R),
+    string_lower(Tok, Tok1),
+    member(Tok1, Q),
+    append(Tokneed, [Tok1], R),
     procesar_tok(Tokens, R), !.
     
 %Para reconocer animes
@@ -270,13 +280,13 @@ parser_tok([Tok| _ ]):-
 parser_tok2([Tok|_], _):-
     Tok == "poco",
     ani_buenos(As),
-    write("Estos son los animes buenos pero poco conocidos: "), write(As),nl, !.
+    write("Estos son los animes buenos pero poco conocidos: "), nl, prettyWriteAnis(As),nl, !.
 
 %Mostrar animes segun su genero
 parser_tok2([], Genero):-
     genero(Genero),
     find_gen(Genero,As),
-    write("Del genero "), write(Genero),write(": "), write(As), nl.
+    write("Del genero "), write(Genero),write(": "), nl, prettyWriteAnis(As), nl.
 
 %lista de animes de genero Genero segun el rating
 parser_tok2([Tok|Tokens], Genero):-
@@ -284,7 +294,7 @@ parser_tok2([Tok|Tokens], Genero):-
     nth0(0, Tokens, Num),
     atom_number(Num,R),
     find_rat_gen(R, Genero, As),
-    write("Del genero "), write(Genero), write(" :"), write(As),nl, !.
+    write("Del genero "), write(Genero), write(" :"), nl, prettyWriteAnis(As),nl, !.
 
 %lista de animes de genero Genero ordenados
 parser_tok2([Tok|Tokens], Genero):-
