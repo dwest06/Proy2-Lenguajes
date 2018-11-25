@@ -163,15 +163,6 @@ sort_pop(L1, L3) :- predsort(ord_pop, L1 , L2), reverse(L2, L3).
 % Ordena una lista de strings de anime por rating y popularidad de mayor a menor
 sort_rat_pop(L1, L3) :- predsort(ord_rat_pop, L1 , L2), reverse(L2, L3).
 
-% Ordena una lista de strings de anime por rating de menor a mayor
-sort_rat_rev(L1, L3) :- predsort(ord_rat, L1 , L2), reverse(L2, L3).
-
-% Ordena una lista de strings de anime por popularidad de menor a mayor
-sort_pop_rev(L1, L3) :- predsort(ord_pop, L1 , L2), reverse(L2, L3).
-
-% Ordena una lista de strings de anime por rating y popularidad de menor a mayor
-sort_rat_pop_rev(L1, L3) :- predsort(ord_rat_pop, L1 , L2), reverse(L2, L3).
-
 % Animes por Genero
 % Encuentra todos los Animes de un genero G
 find_gen(G, As) :- findall(A, (generoAnime(A, Gs),member(G, Gs)) , As).
@@ -206,7 +197,7 @@ ani_buenos(As) :-
 
 %Palabras a reconocer
 
-requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "ordenados", "menor"]).
+requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "ordenados", "menor", "mayor"]).
 res_genericas(["Que tengas un buen dia", "Quiere saber sobre animes?","Te gusta el helado?", "Que bueno!"]).
 
 % Lectura de Bot
@@ -314,14 +305,65 @@ parser_tok3([Tok], Genero):-
 
 %Ordenados por popularidad
 parser_tok3([Tok], Genero):-
-    Tok == "rating",
+    Tok == "popularidad",
     find_gen_pop(Genero,As),
     write("Del genero "), write(Genero), write(" ordenados por popularidad:"), 
     nl, prettyWriteAnis(As),nl, !.
 
 % Ordenados por popularidad y rating
-parser_tok3([Tok|_], Genero):-
-    (Tok == "rating"; Tok == "popularidad"),
+parser_tok3([Tok|[Tok2]], Genero):-
+    Tokens = [Tok, Tok2],
+    member("rating", Tokens),
+    member("popularidad", Tokens),
+    find_gen_rat_pop(Genero,As),
+    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), 
+    nl, prettyWriteAnis(As),nl, !.
+
+% ordenados por rating de menor a mayor
+parser_tok3([Tok | ["menor" | ["mayor"]]], Genero):-
+    Tok == "rating",
+    find_gen_rat(Genero,As1),
+    reverse(As1, As),
+    write("Del genero "), write(Genero), write(" ordenados por rating:"), 
+    nl, prettyWriteAnis(As),nl, !.
+
+% ordenados por rating de mayor a menor
+parser_tok3([Tok | ["mayor" | ["menor"]]], Genero):-
+    Tok == "rating",
+    find_gen_rat(Genero,As),
+    write("Del genero "), write(Genero), write(" ordenados por rating:"), 
+    nl, prettyWriteAnis(As),nl, !.
+
+% ordenados por popularidad de menor a mayor
+parser_tok3([Tok | ["menor" | ["mayor"]]], Genero):-
+    Tok == "popularidad",
+    find_gen_rat(Genero,As1),
+    reverse(As1, As),
+    write("Del genero "), write(Genero), write(" ordenados por rating:"), 
+    nl, prettyWriteAnis(As),nl, !.
+
+% ordenados por popularidad de mayor a menor
+parser_tok3([Tok | ["mayor" | ["menor"]]], Genero):-
+    Tok == "popularidad",
+    find_gen_rat(Genero,As),
+    write("Del genero "), write(Genero), write(" ordenados por rating:"), 
+    nl, prettyWriteAnis(As),nl, !.
+
+% Ordenados por popularidad y rating de menor a mayor
+parser_tok3([Tok|[Tok2 | ["menor" | ["mayor"]]]], Genero):-
+    Tokens = [Tok, Tok2],
+    member("rating", Tokens),
+    member("popularidad", Tokens),
+    find_gen_rat_pop(Genero,As1),
+    reverse(As1, As),
+    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), 
+    nl, prettyWriteAnis(As),nl, !.
+
+% Ordenados por popularidad y rating de mayor a menor
+parser_tok3([Tok|[Tok2 | ["mayor" | ["menor"]]]], Genero):-
+    Tokens = [Tok, Tok2],
+    member("rating", Tokens),
+    member("popularidad", Tokens),
     find_gen_rat_pop(Genero,As),
     write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), 
     nl, prettyWriteAnis(As),nl, !.
