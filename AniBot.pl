@@ -204,39 +204,43 @@ readTokens:-
     %Lee desde el stdin
     current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t,", Tokens), 
     % retorna los Tokens necesarios para el parseo
-    procesar_tok(Tokens,[]).
+    !, procesar_tok(Tokens,[]).
 
 %Procesamos los Tokens para filtrar las palabras claves.
 %Para salir del ciclo
-procesar_tok(["quit"],_).
+procesar_tok(["quit"],_) :- !.
 
 % Fin del primer procesamiento
+<<<<<<< HEAD
 procesar_tok([],Z):- !, write("FIN"), write(Z), nl, parser_tok(Z).
+=======
+procesar_tok([],Z):- write(Z), nl, !, main.
+>>>>>>> 9756b17cdab1e13a9a4a4fbddb6a41cfdc5c51b3
 
 %Para reconocer numeros
 procesar_tok([Tok|Tokens],Tokneed):-
     atom_number(Tok, _),
     append(Tokneed, [Tok], R),
-    procesar_tok(Tokens, R).
+    procesar_tok(Tokens, R), !.
 
 %Para reconocer requerimientos
 procesar_tok([Tok|Tokens],Tokneed):-
     requerimiento(Q),
     member(Tok, Q),
     append(Tokneed, [Tok], R),
-    procesar_tok(Tokens, R).
+    procesar_tok(Tokens, R), !.
     
 %Para reconocer animes
 procesar_tok([Tok|Tokens],Tokneed):-
     anime(Tok),
     append(Tokneed, [Tok], R),
-    procesar_tok(Tokens, R).
+    procesar_tok(Tokens, R), !.
 
 %Para reconocer genero
 procesar_tok([Tok|Tokens],Tokneed):-
     genero(Tok),
     append(Tokneed, [Tok], R),
-    procesar_tok(Tokens, R).
+    procesar_tok(Tokens, R), !.
 
 %Para procesar palabras no reconocidas.
 procesar_tok([_|Tokens], Tokneed):- 
@@ -316,5 +320,5 @@ respuesta_generica:- random_between(0, 3, R), res_genericas(L), nth0(R, L, E), w
 
 %Aqui se hace el loop infinito, Se separa 
 main2:- readTokens.
-main :- write("Bienvenido a AniBot."), nl, main2.
+main :- write("Bienvenido a AniBot."), nl, main2,!.
 
