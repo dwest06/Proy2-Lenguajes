@@ -198,7 +198,7 @@ ani_buenos(As) :-
 %Palabras a reconocer
 
 requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "ordenados"]).
-res_genericas(["Que tengas un buen dia", "¿Quiere saber sobre animes?","¿Te gusta el helado?", "¡Que bueno!"]).
+res_genericas(["Que tengas un buen dia", "Quiere saber sobre animes?","Te gusta el helado?", "Que bueno!"]).
 
 % Lectura de Bot
 readTokens:- 
@@ -299,19 +299,22 @@ parser_tok2([ _ | _ ], _):-
 parser_tok3([Tok], Genero):-
     Tok == "rating",
     find_gen_rat(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por rating:"), write(As),nl, !.
+    write("Del genero "), write(Genero), write(" ordenados por rating:"), 
+    nl, prettyWriteAnis(As),nl, !.
 
 %Ordenados por popularidad
 parser_tok3([Tok], Genero):-
     Tok == "rating",
     find_gen_pop(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por popularidad:"), write(As),nl, !.
+    write("Del genero "), write(Genero), write(" ordenados por popularidad:"), 
+    nl, prettyWriteAnis(As),nl, !.
 
 % Ordenados por popularidad y rating
 parser_tok3([Tok|_], Genero):-
     (Tok == "rating"; Tok == "popularidad"),
     find_gen_rat_pop(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), write(As),nl, !.
+    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), 
+    nl, prettyWriteAnis(As),nl, !.
 
 %
 %parser_tok([Tok|Tokens]):-
