@@ -206,8 +206,9 @@ ani_rat(R, As) :-
 
 %Palabras a reconocer
 
-requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "ordenados", "menor", "mayor"]).
+requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "conocido", "ordenados", "menor", "mayor"]).
 res_genericas(["Que tengas un buen dia", "Quiere saber sobre animes?","Te gusta el helado?", "Que bueno!"]).
+anadir(["añademe", "añade", "incluye", "añadir"]).
 
 % Lectura de Bot
 readTokens:- 
@@ -230,6 +231,14 @@ procesar_tok([Tok|Tokens],Tokneed):-
     procesar_tok(Tokens, R), !.
 
 %Para reconocer requerimientos
+procesar_tok([Tok|Tokens],Tokneed):-
+    requerimiento(Q),
+    string_lower(Tok, Tok1),
+    member(Tok1, Q),
+    append(Tokneed, [Tok1], R),
+    procesar_tok(Tokens, R), !.
+
+%Para reconocer cuando añadir
 procesar_tok([Tok|Tokens],Tokneed):-
     requerimiento(Q),
     string_lower(Tok, Tok1),
@@ -275,7 +284,8 @@ parser_tok([Tok|Tokens]):-
 
 %Para cuando es un requerimiento
 parser_tok([Tok|Tokens]):-
-    requerimiento(Tok),
+    requerimiento(T),
+    member(Tok, T),
     parser_tok2(Tokens, Tok), !.
 
 parser_tok([Tok| _ ]):-
@@ -286,8 +296,8 @@ parser_tok([Tok| _ ]):-
 
 %%%%%%%%%%%%%%%%%%%%%%
 %Animes buenos segun su popularidad
-parser_tok2([Tok|_], _):-
-    Tok == "poco",
+parser_tok2(_, Tok2):-
+    (Tok2 == "buenos"; Tok2 == "poco"),
     ani_buenos(As),
     write("Estos son los animes buenos pero poco conocidos: "), nl, prettyWriteAnis(As),nl, !.
 
