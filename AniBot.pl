@@ -8,6 +8,7 @@ anime("Bleach").
 anime("HunterXHunter").
 anime("Hamtaro").
 anime("Full Metal Alchemist").
+anime("Neon Genesis Evangelion").
 
 genero("Aventura").
 genero("Shoujo").
@@ -28,6 +29,7 @@ generoAnime("Bleach",["Shounen", "Sobrenatural"]).
 generoAnime("HunterXHunter",["Seinen", "Aventura"]).
 generoAnime("Hamtaro",["Kodomo"]).
 generoAnime("Full Metal Alchemist",["Shounen", "Magia"]).
+generoAnime("Neon Genesis Evangelion", ["Shounen", "Mecha", "Aventura"]).
 
 rating("Dragon Ball",3).
 rating("Naruto",1).
@@ -35,6 +37,7 @@ rating("Bleach",4).
 rating("HunterXHunter",5).
 rating("Hamtaro",2).
 rating("Full Metal Alchemist",4).
+rating("Neon Genesis Evangelion", 5).
 
 popularidad("Dragon Ball",7).
 popularidad("Naruto",5).
@@ -42,6 +45,7 @@ popularidad("Bleach",8).
 popularidad("HunterXHunter",3).
 popularidad("Hamtaro",10).
 popularidad("Full Metal Alchemist",1).
+popularidad("Neon Genesis Evangelion", 2).
 
 % Reglas de Bot
 
@@ -65,7 +69,7 @@ preguntar_popularidad(A, P) :-
     assertz(pregunta_popularidad(A, 1)), !,   
     popularidad(A, P).
 
-preguntar_popularidad(A, P) :- 
+preguntar_popularidad(A, P1) :- 
     pregunta_popularidad(A, 4), !,
     retract(pregunta_popularidad(A, 4)),
     popularidad(A, P),
@@ -263,6 +267,7 @@ parser_tok([Tok|Tokens]):-
 
 parser_tok([Tok| _ ]):-
     anime(Tok),
+    preguntar_popularidad(Tok, _), !,
     prettyAniFull(Tok, Z),
     write(Z), nl.
 
