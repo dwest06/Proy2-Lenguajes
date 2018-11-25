@@ -211,7 +211,7 @@ readTokens:-
 procesar_tok(["quit"],_) :- !.
 
 % Fin del primer procesamiento
-procesar_tok([],Z):- write(Z), nl, !, main.
+procesar_tok([],Z):- write(Z), nl,parser_tok(Z), main.
 
 %Para reconocer numeros
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -252,6 +252,7 @@ parser_tok([]):-
 %Para cuando es genero
 parser_tok([Tok|Tokens]):-
     genero(Tok),
+    write(Tok), nl,
     parser_tok2(Tokens, Tok).
 
 %Para cuando es un requerimiento
@@ -260,10 +261,10 @@ parser_tok([Tok|Tokens]):-
     parser_tok2(Tokens, Tok).
 
 %Animes buenos segun su popularidad
-parser_tok2([Tok|Tokens], _):-
+parser_tok2([Tok|_], _):-
     Tok == "poco",
     ani_buenos(As),
-    write("Estos son los animes buenos pero poco conocidos: "), write(As).
+    write("Estos son los animes buenos pero poco conocidos: "), write(As),nl.
 
 %lista de animes de genero Genero segun el rating
 parser_tok2([Tok|Tokens], Genero):-
@@ -271,14 +272,14 @@ parser_tok2([Tok|Tokens], Genero):-
     nth0(0, Tokens, Num),
     atom_number(Num,R),
     find_rat_gen(R, Genero, As),
-    write("Del genero "), write(Genero), write(" :"), write(As).
+    write("Del genero "), write(Genero), write(" :"), write(As),nl.
 
 %lista de animes de genero Genero ordenados
 parser_tok2([Tok|Tokens], Genero):-
     Tok == "ordenados",
     parser_tok3(Tokens, Genero).
 
-parser_tok2([ Tok | _ ], _):-
+parser_tok2([ _ | _ ], _):-
     write("Token no reconocido"), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -286,19 +287,19 @@ parser_tok2([ Tok | _ ], _):-
 parser_tok3([Tok], Genero):-
     Tok == "rating",
     find_gen_rat(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por rating:"), write(As).
+    write("Del genero "), write(Genero), write(" ordenados por rating:"), write(As),nl.
 
 %Ordenados por popularidad
 parser_tok3([Tok], Genero):-
     Tok == "rating",
     find_gen_pop(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por popularidad:"), write(As).
+    write("Del genero "), write(Genero), write(" ordenados por popularidad:"), write(As),nl.
 
 % Ordenados por popularidad y rating
 parser_tok3([Tok|_], Genero):-
     (Tok == "rating"; Tok == "popularidad"),
     find_gen_rat_pop(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), write(As).
+    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), write(As),nl.
 
 %
 %parser_tok([Tok|Tokens]):-
