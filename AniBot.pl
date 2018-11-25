@@ -430,8 +430,19 @@ recGenero(Tokens, G, NextTokens) :-
 
 % Reconoce un anime nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas"]
 recAnimeNuevo(Tokens, A, NextTokens) :- 
-    append(Part, NextTokens, Tokens), strSepCat(Part, " ", A), 
-    NextTokens = [H1|_], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas"]), !.
+    append(Part, NextTokens1, Tokens), strSepCat(Part, " ", A), 
+    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas"]), !.
+
+% Reconoce un genero nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas", ","]
+recGeneroNuevo(Tokens, G, NextTokens) :- 
+    append(Part, NextTokens1, Tokens), strSepCat(Part, " ", G), 
+    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ","]), !.
+
+% Reconoce una lista de generos nuevos de una lista de tokens que terminen en el ["y" , ","]
+recGenerosNuevos(Tokens, [G|T], NextTokens) :- 
+    recGeneroNuevo(Tokens, G, NextTokens1), recGenerosNuevos(NextTokens1, T, NextTokens), !.
+
+recGenerosNuevos(NextTokens, [], NextTokens) :- !.
 
 % Pretty String de una lista de Generos
 prettyGens(Gs, S) :- 
