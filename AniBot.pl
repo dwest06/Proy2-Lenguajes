@@ -198,6 +198,11 @@ ani_buenos(As) :-
     ), 
     A1s), sort_rat(A1s, As).
 
+% Encontrar Animes de rating R
+ani_rat(R, As) :- 
+    findall(A, 
+    rating(A, R), 
+    As1), sort_pop(As1, As).
 
 %Palabras a reconocer
 
@@ -268,6 +273,14 @@ parser_tok([]):-
 parser_tok([Tok|Tokens]):-
     genero(Tok),
     parser_tok2(Tokens, Tok), !.
+
+%Para cuando son animes de un rating
+parser_tok([Tok|Tokens]):-
+    Tok == "rating",
+    nth0(0, Tokens, Num),
+    atom_number(Num,R),
+    ani_rat(R, As),
+    write("Animes de rating "), write(R), write(" :"), nl, prettyWriteAnis(As),nl, !.
 
 %Para cuando es un requerimiento
 parser_tok([Tok|Tokens]):-
@@ -424,6 +437,11 @@ recAnime(Tokens, A, NextTokens) :-
 % Tambien devuelve los siguientes tokens al genero
 recGenero(Tokens, G, NextTokens) :- 
     append(Part, NextTokens, Tokens), strSepCat(Part, " ", G), genero(G), !.
+
+% Reconoce un anime nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas"]
+recAnimeNuevo(Tokens, A, NextTokens) :- 
+    append(Part, NextTokens, Tokens), strSepCat(Part, " ", A), 
+    NextTokens = [H1|_], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas"]), !.
 
 % Pretty String de una lista de Generos
 prettyGens(Gs, S) :- 
