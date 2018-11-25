@@ -196,8 +196,9 @@ ani_buenos(As) :-
 
 
 %Palabras a reconocer
-requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "conocidos", "ordenados"]).
-res_genericas(["Que tengas un buen dia", "Quiere saber sobre animes?","Te gusta el helado?", "Que bueno!"]).
+
+requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "ordenados"]).
+res_genericas(["Que tengas un buen dia", "¿Quiere saber sobre animes?","¿Te gusta el helado?", "¡Que bueno!"]).
 
 % Lectura de Bot
 readTokens:- 
@@ -211,7 +212,7 @@ readTokens:-
 procesar_tok(["quit"],_) :- !.
 
 % Fin del primer procesamiento
-procesar_tok([],Z):- write(Z), nl, parser_tok(Z), !, main2, !.
+procesar_tok([],Z):- write(Z), nl, parser_tok(Z), main2.
 
 %Para reconocer numeros
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -252,7 +253,6 @@ parser_tok([]):-
 %Para cuando es genero
 parser_tok([Tok|Tokens]):-
     genero(Tok),
-    write(Tok), nl,
     parser_tok2(Tokens, Tok), !.
 
 %Para cuando es un requerimiento
@@ -260,11 +260,23 @@ parser_tok([Tok|Tokens]):-
     requerimiento(Tok),
     parser_tok2(Tokens, Tok), !.
 
+parser_tok([Tok| _ ]):-
+    anime(Tok),
+    prettyAniFull(Tok, Z),
+    write(Z), nl.
+
+%%%%%%%%%%%%%%%%%%%%%%
 %Animes buenos segun su popularidad
 parser_tok2([Tok|_], _):-
     Tok == "poco",
     ani_buenos(As),
     write("Estos son los animes buenos pero poco conocidos: "), write(As),nl, !.
+
+%Mostrar animes segun su genero
+parser_tok2([], Genero):-
+    genero(Genero),
+    find_gen(Genero,As),
+    write("Del genero "), write(Genero),write(": "), write(As), nl.
 
 %lista de animes de genero Genero segun el rating
 parser_tok2([Tok|Tokens], Genero):-
@@ -283,10 +295,6 @@ parser_tok2([ _ | _ ], _):-
     write("Token no reconocido"), nl, !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parser_tok3([], Genero):-
-    find_gen(Genero,As),
-    write("Del genero "), write(Genero),write(": "), write(As), nl, !.
-
 % ordenados por rating
 parser_tok3([Tok], Genero):-
     Tok == "rating",
