@@ -211,11 +211,7 @@ readTokens:-
 procesar_tok(["quit"],_) :- !.
 
 % Fin del primer procesamiento
-<<<<<<< HEAD
-procesar_tok([],Z):- !, write("FIN"), write(Z), nl, parser_tok(Z).
-=======
 procesar_tok([],Z):- write(Z), nl, !, main.
->>>>>>> 9756b17cdab1e13a9a4a4fbddb6a41cfdc5c51b3
 
 %Para reconocer numeros
 procesar_tok([Tok|Tokens],Tokneed):-
