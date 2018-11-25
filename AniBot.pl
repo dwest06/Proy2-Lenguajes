@@ -341,3 +341,35 @@ recAnime(Tokens, A, NextTokens) :-
 % Tambien devuelve los siguientes tokens al genero
 recGenero(Tokens, G, NextTokens) :- 
     append(Part, NextTokens, Tokens), strSepCat(Part, " ", G), genero(G), !.
+
+
+% Pretty String de una lista de Generos
+prettyGens(Gs, S) :- 
+    strSepCat(Gs, ", ", S1), string_concat("[", S1, S2), string_concat(S2, "]", S), !.
+
+% Pretty String de toda la info de un anime
+prettyAniFull(A, S) :- 
+    generoAnime(A, Gs), prettyGens(Gs, GString), 
+    rating(A, R), atom_string(R, RString),
+    popularidad(A, P), popularidad_string(P, PString),
+    string_concat(A, " con Rating de ", S1),
+    string_concat(S1, RString, S2),
+    string_concat(S2, ", el cual es ", S3),
+    string_concat(S3, PString, S4),
+    string_concat(S4, " y de los Generos ", S5),
+    string_concat(S5, GString, S), !.
+
+
+% Pretty String de toda la info de una lista de animes
+prettyAnisFull(As, S) :- 
+    prettyAnisStringList(As, PrettyAs), 
+    strSepCat(PrettyAs, ".\n  * ", S1), 
+    string_concat("  * ", S1, S2), string_concat(S2, ".", S), !.
+
+% Lista de Pretty Strings con toda la info de una lista de animes
+prettyAnisStringList([], []) :- !.
+prettyAnisStringList([A|As], [S1|T]) :- 
+    prettyAniFull(A, S1), prettyAnisStringList(As, T).
+
+% Imprime en consola una lista de animes con toda su informacion
+prettyWriteAnis(As) :- prettyAnisFull(As, S), write(S), !.
