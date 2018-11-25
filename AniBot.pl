@@ -208,7 +208,7 @@ ani_rat(R, As) :-
 
 requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "conocido", "ordenados", "menor", "mayor"]).
 res_genericas(["Que tengas un buen dia", "Quiere saber sobre animes?","Te gusta el helado?", "Que bueno!"]).
-anadir(["añademe", "añade", "incluye", "añadir"]).
+anadir(["añademe", "añade", "incluye", "añadir", "agrega","agregame"]).
 
 % Lectura de Bot
 readTokens:- 
@@ -238,6 +238,14 @@ procesar_tok([Tok|Tokens],Tokneed):-
     append(Tokneed, [Tok1], R),
     procesar_tok(Tokens, R), !.
 
+%Para reconocer para anadir
+procesar_tok([Tok|Tokens],Tokneed):-
+    anadir(Q),
+    string_lower(Tok, Tok1),
+    member(Tok1, Q),
+    append(Tokneed, [Tok1], R),
+    %Vamos a una regla especial para leer el anime
+    procesar_tok(Tokens, R), !.
 %Para reconocer cuando añadir
 procesar_tok([Tok|Tokens],Tokneed):-
     requerimiento(Q),
