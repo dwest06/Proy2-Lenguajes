@@ -197,21 +197,21 @@ ani_buenos(As) :-
 
 %Palabras a reconocer
 requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "conocidos", "ordenados"]).
-res_genericas(["Que tengas un buen dia", "¿Quiere saber sobre animes?","¿Te gusta el helado?", "¡Que bueno!"]).
+res_genericas(["Que tengas un buen dia", "Quiere saber sobre animes?","Te gusta el helado?", "Que bueno!"]).
 
 % Lectura de Bot
 readTokens:- 
     %Lee desde el stdin
     current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t,", Tokens), 
     % retorna los Tokens necesarios para el parseo
-    !, procesar_tok(Tokens,[]).
+    !, procesar_tok(Tokens,[]), !.
 
 %Procesamos los Tokens para filtrar las palabras claves.
 %Para salir del ciclo
 procesar_tok(["quit"],_) :- !.
 
 % Fin del primer procesamiento
-procesar_tok([],Z):- write(Z), nl,parser_tok(Z), main2.
+procesar_tok([],Z):- write(Z), nl, parser_tok(Z), !, main2, !.
 
 %Para reconocer numeros
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -240,31 +240,31 @@ procesar_tok([Tok|Tokens],Tokneed):-
 
 %Para procesar palabras no reconocidas.
 procesar_tok([_|Tokens], Tokneed):- 
-    procesar_tok(Tokens, Tokneed).    
+    procesar_tok(Tokens, Tokneed), !.    
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Los Tokens filtrados pasan por "estados" para llegar a la queries indicada.
 %Respuestas Genericas cuando el usuario haga un consulta no valida.
 parser_tok([]):-
-    respuesta_generica, main2.
+    respuesta_generica, !.
 
 %Para cuando es genero
 parser_tok([Tok|Tokens]):-
     genero(Tok),
     write(Tok), nl,
-    parser_tok2(Tokens, Tok).
+    parser_tok2(Tokens, Tok), !.
 
 %Para cuando es un requerimiento
 parser_tok([Tok|Tokens]):-
     requerimiento(Tok),
-    parser_tok2(Tokens, Tok).
+    parser_tok2(Tokens, Tok), !.
 
 %Animes buenos segun su popularidad
 parser_tok2([Tok|_], _):-
     Tok == "poco",
     ani_buenos(As),
-    write("Estos son los animes buenos pero poco conocidos: "), write(As),nl.
+    write("Estos son los animes buenos pero poco conocidos: "), write(As),nl, !.
 
 %lista de animes de genero Genero segun el rating
 parser_tok2([Tok|Tokens], Genero):-
@@ -272,38 +272,38 @@ parser_tok2([Tok|Tokens], Genero):-
     nth0(0, Tokens, Num),
     atom_number(Num,R),
     find_rat_gen(R, Genero, As),
-    write("Del genero "), write(Genero), write(" :"), write(As),nl.
+    write("Del genero "), write(Genero), write(" :"), write(As),nl, !.
 
 %lista de animes de genero Genero ordenados
 parser_tok2([Tok|Tokens], Genero):-
     Tok == "ordenados",
-    parser_tok3(Tokens, Genero).
+    parser_tok3(Tokens, Genero), !.
 
 parser_tok2([ _ | _ ], _):-
-    write("Token no reconocido"), nl.
+    write("Token no reconocido"), nl, !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parser_tok3([], Genero):-
     find_gen(Genero,As),
-    write("Del genero "), write(Genero),write(": "), write(As), nl.
+    write("Del genero "), write(Genero),write(": "), write(As), nl, !.
 
 % ordenados por rating
 parser_tok3([Tok], Genero):-
     Tok == "rating",
     find_gen_rat(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por rating:"), write(As),nl.
+    write("Del genero "), write(Genero), write(" ordenados por rating:"), write(As),nl, !.
 
 %Ordenados por popularidad
 parser_tok3([Tok], Genero):-
     Tok == "rating",
     find_gen_pop(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por popularidad:"), write(As),nl.
+    write("Del genero "), write(Genero), write(" ordenados por popularidad:"), write(As),nl, !.
 
 % Ordenados por popularidad y rating
 parser_tok3([Tok|_], Genero):-
     (Tok == "rating"; Tok == "popularidad"),
     find_gen_rat_pop(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), write(As),nl.
+    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), write(As),nl, !.
 
 %
 %parser_tok([Tok|Tokens]):-
@@ -316,12 +316,12 @@ parser_tok3([Tok|_], Genero):-
 %    .
 
 
-respuesta_generica:- random_between(0, 3, R), res_genericas(L), nth0(R, L, E), write(E), nl.
+respuesta_generica:- random_between(0, 3, R), res_genericas(L), nth0(R, L, E), write(E), nl, !.
 
 
 %Aqui se hace el loop infinito, Se separa 
-main2:- readTokens.
-main :- write("Bienvenido a AniBot."), nl, main2,!.
+main2:- readTokens, !.
+main :- write("Bienvenido a AniBot."), nl, !, main2,!.
 
 % Concatenar una lista de strings con un separador
 % De https://stackoverflow.com/questions/4708235/concatting-a-list-of-strings-in-prolog
