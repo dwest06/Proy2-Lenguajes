@@ -324,14 +324,14 @@ parser_tok3([Tok | ["menor" | ["mayor"]]], Genero):-
     Tok == "rating",
     find_gen_rat(Genero,As1),
     reverse(As1, As),
-    write("Del genero "), write(Genero), write(" ordenados por rating:"), 
+    write("Del genero "), write(Genero), write(" ordenados por rating de menor a mayor:"), 
     nl, prettyWriteAnis(As),nl, !.
 
 % ordenados por rating de mayor a menor
 parser_tok3([Tok | ["mayor" | ["menor"]]], Genero):-
     Tok == "rating",
     find_gen_rat(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por rating:"), 
+    write("Del genero "), write(Genero), write(" ordenados por rating de mayor a menor:"), 
     nl, prettyWriteAnis(As),nl, !.
 
 % ordenados por popularidad de menor a mayor
@@ -339,14 +339,14 @@ parser_tok3([Tok | ["menor" | ["mayor"]]], Genero):-
     Tok == "popularidad",
     find_gen_rat(Genero,As1),
     reverse(As1, As),
-    write("Del genero "), write(Genero), write(" ordenados por rating:"), 
+    write("Del genero "), write(Genero), write(" ordenados por rating de menor a mayor:"), 
     nl, prettyWriteAnis(As),nl, !.
 
 % ordenados por popularidad de mayor a menor
 parser_tok3([Tok | ["mayor" | ["menor"]]], Genero):-
     Tok == "popularidad",
     find_gen_rat(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por rating:"), 
+    write("Del genero "), write(Genero), write(" ordenados por rating de mayor a menor:"), 
     nl, prettyWriteAnis(As),nl, !.
 
 % Ordenados por popularidad y rating de menor a mayor
@@ -356,7 +356,7 @@ parser_tok3([Tok|[Tok2 | ["menor" | ["mayor"]]]], Genero):-
     member("popularidad", Tokens),
     find_gen_rat_pop(Genero,As1),
     reverse(As1, As),
-    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), 
+    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad de menor a mayor:"), 
     nl, prettyWriteAnis(As),nl, !.
 
 % Ordenados por popularidad y rating de mayor a menor
@@ -365,7 +365,7 @@ parser_tok3([Tok|[Tok2 | ["mayor" | ["menor"]]]], Genero):-
     member("rating", Tokens),
     member("popularidad", Tokens),
     find_gen_rat_pop(Genero,As),
-    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad:"), 
+    write("Del genero "), write(Genero), write(" ordenados por rating y popularidad de mayor a menor:"), 
     nl, prettyWriteAnis(As),nl, !.
 
 %
