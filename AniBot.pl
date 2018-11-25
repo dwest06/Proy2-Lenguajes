@@ -211,7 +211,7 @@ readTokens:-
 procesar_tok(["quit"],_) :- !.
 
 % Fin del primer procesamiento
-procesar_tok([],Z):- write(Z), nl,parser_tok(Z), main.
+procesar_tok([],Z):- write(Z), nl,parser_tok(Z), main2.
 
 %Para reconocer numeros
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -283,6 +283,10 @@ parser_tok2([ _ | _ ], _):-
     write("Token no reconocido"), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+parser_tok3([], Genero):-
+    find_gen(Genero,As),
+    write("Del genero "), write(Genero),write(": "), write(As), nl.
+
 % ordenados por rating
 parser_tok3([Tok], Genero):-
     Tok == "rating",
@@ -342,3 +346,6 @@ recAnime(Tokens, A, NextTokens) :-
 % Tambien devuelve los siguientes tokens al genero
 recGenero(Tokens, G, NextTokens) :- 
     append(Part, NextTokens, Tokens), strSepCat(Part, " ", G), genero(G), !.
+
+
+
