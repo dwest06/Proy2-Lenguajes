@@ -209,7 +209,7 @@ ani_rat(R, As) :-
 
 requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "conocido", "ordenados", "menor", "mayor"]).
 res_genericas(["¡Que tengas un buen dia!", "¿Quiere saber sobre animes?","¿Te gusta el helado?", "¡Que bueno!"]).
-anadir(["añademe", "añade", "incluye", "añadir", "agrega","agregame"]).
+anadir(["añademe", "añade", "incluye", "añadir", "agrega","agregame", "agregar"]).
 
 % Lectura de Bot
 readTokens:- 
@@ -273,12 +273,12 @@ procesar_tok([_|Tokens], Tokneed):-
 
 % Fin del procesamiento de animes nuevos
 % TODO, ir a otro parser
-procesar_tok2([],Z):- write(Z), nl, parser_tok(Z), main2.
+procesar_tok2([],Z):- write(Z), nl, parser_tok(["agrega"|Z]), main2.
 
 %Para reconocer numeros de nuevos animes
 procesar_tok2([Tok|Tokens],Tokneed):-
     atom_number(Tok, _),
-    append(Tokneed, [Tok], R),
+    append(Tokneed, [Tok], R), !,
     procesar_tok2(Tokens, R), !.
 
 %Especial para reconocer Nombres de animes
@@ -312,11 +312,11 @@ procesar_tok2([Tok|Tokens],Tokneed):-
     %write("Añadir nueva popularidad"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["popularidad"]),
-    append(Tokneed, ["popularidad"], R),
+    append(Tokneed, ["popularidad"], R), !,
     procesar_tok2(Tokens, R), !.
 
 %Para procesar palabras no reconocidas.
-procesar_tok2([_|Tokens], Tokneed):- 
+procesar_tok2([_|Tokens], Tokneed):- !, 
     procesar_tok2(Tokens, Tokneed), !. 
 
 
@@ -326,6 +326,11 @@ procesar_tok2([_|Tokens], Tokneed):-
 %Respuestas Genericas cuando el usuario haga un consulta no valida.
 parser_tok([]):-
     respuesta_generica, !.
+
+parser_tok([Tok|Tokens]):-
+    anadir(T),
+    member(Tok, T),
+    parser_tok2(Tokens, Tok), !.
 
 %Para cuando es genero
 parser_tok([Tok|Tokens]):-
@@ -350,11 +355,6 @@ parser_tok([Tok| _ ]):-
     anime(Tok),
     preguntar_popularidad(Tok, _), !,
     prettyWriteAnis(Tok), nl.
-
-parser_tok([Tok|Tokens]):-
-    anadir(T),
-    member(Tok, T),
-    parser_tok2(Tokens, Tok), !.
 
 %%%%%%%%%%%%%%%%%%%%%%
 %Animes buenos segun su popularidad
@@ -483,11 +483,13 @@ parser_tok4([Tok|[Generos | _]], Nombre, Rat, Pop):-
 %Añadimos el anime segun si dieron la popularidad o no
 parser_tok5(Nombre, Generos, Rat, 0):-
     addAnime(Nombre,Generos, Rat),
-    prettyWriteAnis(Nombre).
+    prettyAniFull(Nombre, Z),
+    write(Z), nl.
 
 parser_tok5(Nombre, Generos, Rat, Pop):-
     addAnime(Nombre,Generos, Rat, Pop),
-    prettyWriteAnis(Nombre).
+    prettyAniFull(Nombre, Z),
+    write(Z), nl.
 
 %
 %parser_tok([Tok|Tokens]):-
