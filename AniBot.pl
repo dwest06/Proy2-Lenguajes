@@ -1,6 +1,7 @@
 :- dynamic popularidad/2. % Permitir cambiar popularidad
 :- dynamic generoAnime/2. % Permitir cambiar generos de un anime
 % Revisar si nos importa hacer cleanup http://www.swi-prolog.org/howto/database.html
+:- encoding(utf8).
 
 anime("Naruto").
 anime("Dragon Ball").
@@ -207,7 +208,7 @@ ani_rat(R, As) :-
 %Palabras a reconocer
 
 requerimiento(["rating", "genero", "popularidad", "populares", "buenos","poco", "conocido", "ordenados", "menor", "mayor"]).
-res_genericas(["Que tengas un buen dia", "Quiere saber sobre animes?","Te gusta el helado?", "Que bueno!"]).
+res_genericas(["¡Que tengas un buen dia!", "¿Quiere saber sobre animes?","¿Te gusta el helado?", "¡Que bueno!"]).
 anadir(["añademe", "añade", "incluye", "añadir"]).
 
 % Lectura de Bot
