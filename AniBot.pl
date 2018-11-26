@@ -245,7 +245,7 @@ procesar_tok([Tok|Tokens],Tokneed):-
     string_lower(Tok, Tok1),
     member(Tok1, Q), !,
     %Vamos a una regla especial para leer el anime
-    procesar_tok2(["Agregar" | Tokens], R), !.
+    procesar_tok2(["Agregar" | Tokens], Tokneed), !.
 
 %Para reconocer cuando añadir
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -284,14 +284,14 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 %Especial para reconocer Nombres de animes
 procesar_tok2([Tok|Tokens],Tokneed):-
     Tok == "Agregar",
-    write("Añadir nuevo anime"),nl,
+    %write("Añadir nuevo anime"),nl,
     recAnimeNuevo(Tokens, A, NextTokens),
     append(Tokneed, [A], R), !, 
     procesar_tok2(NextTokens, R), !.
 
 %Especial para reconocer Generos de animes
 procesar_tok2([Tok|Tokens],Tokneed):-
-    write("Añadir nuevos generos"), nl,
+    %write("Añadir nuevos generos"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["genero", "generos"]),
     recGenerosNuevos(Tokens, GS, NextTokens),
@@ -301,7 +301,7 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 
 %Especial para reconocer rating de animes nuevos
 procesar_tok2([Tok|Tokens],Tokneed):-
-    write("Añadir nuevo rating"), nl,
+    %write("Añadir nuevo rating"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["rating"]),
     append(Tokneed, ["rating"], R), !,
@@ -309,7 +309,7 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 
 %Especial para reconocer rating de animes nuevos
 procesar_tok2([Tok|Tokens],Tokneed):-
-    write("Añadir nueva popularidad"), nl,
+    %write("Añadir nueva popularidad"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["popularidad"]),
     append(Tokneed, ["popularidad"], R),
@@ -349,8 +349,7 @@ parser_tok([Tok|Tokens]):-
 parser_tok([Tok| _ ]):-
     anime(Tok),
     preguntar_popularidad(Tok, _), !,
-    prettyAniFull(Tok, Z),
-    write(Z), nl.
+    prettyWriteAnis(Tok), nl.
 
 parser_tok([Tok|Tokens]):-
     anadir(T),
@@ -467,16 +466,16 @@ parser_tok3([Tok|[Tok2 | ["mayor" | ["menor"]]]], Genero):-
     nl, prettyWriteAnis(As),nl, !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Unificamos los valores del anime
-parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
+%Unificamos los valores del anime para poder se añadidos
+parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, _):-
     Tok == "popularidad",
     parser_tok4(Tokens, Nombre, Rat, Num).
 
-parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
+parser_tok4([Tok|[Num | Tokens]], Nombre, _, Pop):-
     Tok == "rating",
     parser_tok4(Tokens, Nombre, Num, Pop).
 
-parser_tok4([Tok|[Generos | Tokens]], Nombre, Rat, Pop):-
+parser_tok4([Tok|[Generos | _]], Nombre, Rat, Pop):-
     Tok == "genero",
     parser_tok5(Nombre, Generos, Rat, Pop).
 
