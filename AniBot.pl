@@ -10,6 +10,9 @@ anime("HunterXHunter").
 anime("Hamtaro").
 anime("Full Metal Alchemist").
 anime("Neon Genesis Evangelion").
+anime("Madoka Magika").
+anime("Pokemon").
+anime("Digimon").
 
 genero("Aventura").
 genero("Shoujo").
@@ -31,6 +34,9 @@ generoAnime("HunterXHunter",["Seinen", "Aventura"]).
 generoAnime("Hamtaro",["Kodomo"]).
 generoAnime("Full Metal Alchemist",["Shounen", "Magia"]).
 generoAnime("Neon Genesis Evangelion", ["Shounen", "Mecha", "Aventura"]).
+generoAnime("Madoka Magika", ["Aventura", "Gore", "Fantasía"]).
+generoAnime("Pokemon", ["Aventura", "Fantasía"]).
+generoAnime("Digimon", ["Aventura", "Fantasía"]).
 
 rating("Dragon Ball",3).
 rating("Naruto",1).
@@ -39,6 +45,9 @@ rating("HunterXHunter",5).
 rating("Hamtaro",2).
 rating("Full Metal Alchemist",4).
 rating("Neon Genesis Evangelion", 5).
+rating("Madoka Magika", 3).
+rating("Pokemon", 3).
+rating("Digimon", 3).
 
 popularidad("Dragon Ball",7).
 popularidad("Naruto",5).
@@ -47,6 +56,9 @@ popularidad("HunterXHunter",3).
 popularidad("Hamtaro",10).
 popularidad("Full Metal Alchemist",1).
 popularidad("Neon Genesis Evangelion", 2).
+popularidad("Madoka Magika", 6).
+popularidad("Pokemon", 9).
+popularidad("Digimon", 7).
 
 % Reglas de Bot
 
@@ -372,7 +384,8 @@ parser_tok([Tok|Tokens]):-
 parser_tok([Tok| _ ]):-
     anime(Tok),
     preguntar_popularidad(Tok, _), !,
-    prettyWriteAnis(Tok), nl.
+    prettyAniFull(Tok, Z), 
+    write(Z), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%
 %Animes buenos segun su popularidad
@@ -393,7 +406,8 @@ parser_tok2([Tok|Tokens], Genero):-
     nth0(0, Tokens, Num),
     atom_number(Num,R),
     find_rat_gen(R, Genero, As),
-    write("Del genero "), write(Genero), write(" :"), nl, prettyWriteAnis(As),nl, !.
+    write("Del genero "), write(Genero), write(" con rating "), write(R), write(":"), nl, 
+    prettyWriteAnis(As),nl, !.
 
 %lista de animes de genero Genero ordenados
 parser_tok2([Tok|Tokens], Genero):-
