@@ -491,17 +491,6 @@ parser_tok5(Nombre, Generos, Rat, Pop):-
     prettyAniFull(Nombre, Z),
     write(Z), nl.
 
-%
-%parser_tok([Tok|Tokens]):-
-%    .
-
-%parser_tok([Tok|_]):-
-%    write("Token no reconocido"),nl.
-
-%parser_tok2([Tok|Tokens]):-
-%    .
-
-
 respuesta_generica:- random_between(0, 3, R), res_genericas(L), nth0(R, L, E), write(E), nl, !.
 
 
