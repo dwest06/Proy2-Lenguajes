@@ -214,16 +214,31 @@ anadir(["añademe", "añade", "incluye", "añadir", "agrega","agregame", "agrega
 % Lectura de Bot
 readTokens:- 
     %Lee desde el stdin
-    current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t,", Tokens), 
+    current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t", Tokens1), 
     % retorna los Tokens necesarios para el parseo
+    !, preprocesar_tok(Tokens1, Tokens),
+    % write("Tokens: "), write(Tokens), nl,
     !, procesar_tok(Tokens,[]), !.
+
+% Preprocesar Tokens para separar comas, exclamacion, puntos y preguntas
+
+preprocesar_tok([], []) :- !.
+preprocesar_tok([H|T], Tokens) :- 
+    re_split("(;|,|\\?|\\.|!|¿|¡|\\-)", H, R1), exclude(==(""), R1, R2), 
+    preprocesar_tok(T, Tokens2), !, append(R2, Tokens2, Tokens).
+
 
 %Procesamos los Tokens para filtrar las palabras claves.
 %Para salir del ciclo
 procesar_tok(["quit"],_) :- !.
+procesar_tok(["salir"],_) :- !.
+procesar_tok(["Quit"],_) :- !.
+procesar_tok(["Salir"],_) :- !.
 
 % Fin del primer procesamiento
-procesar_tok([],Z):- write(Z), nl, parser_tok(Z), main2.
+procesar_tok([],Z):- 
+    % write(Z), nl, 
+    parser_tok(Z), main2.
 
 %Para reconocer numeros
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -240,12 +255,12 @@ procesar_tok([Tok|Tokens],Tokneed):-
     procesar_tok(Tokens, R), !.
 
 %Para reconocer para anadir
-procesar_tok([Tok|Tokens],Tokneed):-
+procesar_tok([Tok|Tokens],_):-
     anadir(Q),
     string_lower(Tok, Tok1),
     member(Tok1, Q), !,
     %Vamos a una regla especial para leer el anime
-    procesar_tok2(["Agregar" | Tokens], Tokneed), !.
+    procesar_tok2(["Agregar" | Tokens], _), !.
 
 %Para reconocer cuando añadir
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -273,7 +288,9 @@ procesar_tok([_|Tokens], Tokneed):-
 
 % Fin del procesamiento de animes nuevos
 % TODO, ir a otro parser
-procesar_tok2([],Z):- write(Z), nl, parser_tok(["agrega"|Z]), main2.
+procesar_tok2([],Z):- 
+    % write(Z), nl, 
+    parser_tok(["agrega"|Z]), main2.
 
 %Para reconocer numeros de nuevos animes
 procesar_tok2([Tok|Tokens],Tokneed):-
@@ -291,9 +308,10 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 
 %Especial para reconocer Generos de animes
 procesar_tok2([Tok|Tokens],Tokneed):-
-    %write("Añadir nuevos generos"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["genero", "generos"]),
+    %write("Añadir nuevos generos"), nl,
+    %write(Tokens), nl,
     recGenerosNuevos(Tokens, GS, NextTokens),
     append(Tokneed, ["genero"], R1),
     append(R1, [GS], R), !,
@@ -301,17 +319,17 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 
 %Especial para reconocer rating de animes nuevos
 procesar_tok2([Tok|Tokens],Tokneed):-
-    %write("Añadir nuevo rating"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["rating"]),
+    %write("Añadir nuevo rating"), nl,
     append(Tokneed, ["rating"], R), !,
     procesar_tok2(Tokens, R), !.
 
 %Especial para reconocer rating de animes nuevos
 procesar_tok2([Tok|Tokens],Tokneed):-
-    %write("Añadir nueva popularidad"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["popularidad"]),
+    %write("Añadir nueva popularidad"), nl,
     append(Tokneed, ["popularidad"], R), !,
     procesar_tok2(Tokens, R), !.
 
@@ -390,7 +408,9 @@ parser_tok2([Tok|Tokens], Tok2):-
     parser_tok4(Tokens, Tok, 0, 0).
 
 parser_tok2([ _ | _ ], _):-
-    write("Token no reconocido"), nl, !.
+    respuesta_generica,
+    % write("Token no reconocido"), nl, 
+    !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ordenados por rating
@@ -484,12 +504,12 @@ parser_tok4([Tok|[Generos | _]], Nombre, Rat, Pop):-
 parser_tok5(Nombre, Generos, Rat, 0):-
     addAnime(Nombre,Generos, Rat),
     prettyAniFull(Nombre, Z),
-    write(Z), nl.
+    write("Se ha añadido "), write(Z), nl.
 
 parser_tok5(Nombre, Generos, Rat, Pop):-
     addAnime(Nombre,Generos, Rat, Pop),
     prettyAniFull(Nombre, Z),
-    write(Z), nl.
+    write("Se ha añadido "), write(Z), nl.
 
 respuesta_generica:- random_between(0, 3, R), res_genericas(L), nth0(R, L, E), write(E), nl, !.
 
@@ -525,12 +545,12 @@ recGenero(Tokens, G, NextTokens) :-
 % Reconoce un anime nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas"]
 recAnimeNuevo(Tokens, A, NextTokens) :- 
     append(Part, NextTokens1, Tokens), strSepCat(Part, " ", A), 
-    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas"]), !.
+    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ",", ".", "-"]), !.
 
 % Reconoce un genero nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas", "," , "."]
 recGeneroNuevo(Tokens, G, NextTokens) :- 
     append(Part, NextTokens1, Tokens), strSepCat(Part, " ", G), 
-    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ",", "."]), !.
+    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ",", ".", "-"]), !.
 
 recGeneroNuevo(Tokens, G, []) :- 
     strSepCat(Tokens, " ", G), !.
@@ -547,19 +567,22 @@ recGenerosNuevos(NextTokens, [], NextTokens) :- !.
 
 % Pretty String de una lista de Generos
 prettyGens(Gs, S) :- 
-    strSepCat(Gs, ", ", S1), string_concat("[", S1, S2), string_concat(S2, "]", S), !.
+    strSepCat(Gs, ", ", S1), string_concat("", S1, S2), string_concat(S2, "", S), !.
 
 % Pretty String de toda la info de un anime
 prettyAniFull(A, S) :- 
     generoAnime(A, Gs), prettyGens(Gs, GString), 
     rating(A, R), atom_string(R, RString),
-    popularidad(A, P), popularidad_string(P, PString),
+    popularidad(A, P), popularidad_string(P, PString), atom_string(P, PStringShort),
     string_concat(A, " con Rating de ", S1),
     string_concat(S1, RString, S2),
     string_concat(S2, ", el cual es ", S3),
     string_concat(S3, PString, S4),
-    string_concat(S4, " y de los Generos ", S5),
-    string_concat(S5, GString, S), !.
+    string_concat(S4, " (", S5),
+    string_concat(S5, PStringShort, S6),
+    string_concat(S6, ")", S7),
+    string_concat(S7, " y de los Generos: ", S8),
+    string_concat(S8, GString, S), !.
 
 
 % Pretty String de toda la info de una lista de animes
