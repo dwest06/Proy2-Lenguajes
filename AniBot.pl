@@ -409,7 +409,9 @@ parser_tok2([Tok|Tokens], Tok2):-
     parser_tok4(Tokens, Tok, 0, 0).
 
 parser_tok2([ _ | _ ], _):-
-    write("Token no reconocido"), nl, !.
+    respuesta_generica,
+    % write("Token no reconocido"), nl, 
+    !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ordenados por rating
