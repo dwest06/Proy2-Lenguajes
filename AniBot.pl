@@ -214,8 +214,9 @@ anadir(["añademe", "añade", "incluye", "añadir", "agrega","agregame", "agrega
 % Lectura de Bot
 readTokens:- 
     %Lee desde el stdin
-    current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t,", Tokens), 
+    current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t", Tokens), 
     % retorna los Tokens necesarios para el parseo
+    write("Tokens: "), write(Tokens), nl,
     !, procesar_tok(Tokens,[]), !.
 
 %Procesamos los Tokens para filtrar las palabras claves.
@@ -291,9 +292,10 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 
 %Especial para reconocer Generos de animes
 procesar_tok2([Tok|Tokens],Tokneed):-
-    write("Añadir nuevos generos"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["genero", "generos"]),
+    write("Añadir nuevos generos"), nl,
+    write(Tokens), nl,
     recGenerosNuevos(Tokens, GS, NextTokens),
     append(Tokneed, ["genero"], R1),
     append(R1, [GS], R), !,
@@ -301,17 +303,17 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 
 %Especial para reconocer rating de animes nuevos
 procesar_tok2([Tok|Tokens],Tokneed):-
-    write("Añadir nuevo rating"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["rating"]),
+    write("Añadir nuevo rating"), nl,
     append(Tokneed, ["rating"], R), !,
     procesar_tok2(Tokens, R), !.
 
 %Especial para reconocer rating de animes nuevos
 procesar_tok2([Tok|Tokens],Tokneed):-
-    write("Añadir nueva popularidad"), nl,
     string_lower(Tok, Tok1),
     member(Tok1, ["popularidad"]),
+    write("Añadir nueva popularidad"), nl,
     append(Tokneed, ["popularidad"], R), !,
     procesar_tok2(Tokens, R), !.
 
