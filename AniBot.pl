@@ -45,6 +45,7 @@ rating("HunterXHunter",5).
 rating("Hamtaro",2).
 rating("Full Metal Alchemist",4).
 rating("Neon Genesis Evangelion", 5).
+rating("Madoka Magika", 3).
 rating("Pokemon", 3).
 rating("Digimon", 3).
 
@@ -383,7 +384,8 @@ parser_tok([Tok|Tokens]):-
 parser_tok([Tok| _ ]):-
     anime(Tok),
     preguntar_popularidad(Tok, _), !,
-    prettyWriteAnis(Tok), nl.
+    prettyAniFull(Tok, Z), 
+    write(Z), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%
 %Animes buenos segun su popularidad
