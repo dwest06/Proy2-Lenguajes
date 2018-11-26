@@ -383,9 +383,6 @@ parser_tok2([Tok|Tokens], Genero):-
     Tok == "ordenados",
     parser_tok3(Tokens, Genero), !.
 
-parser_tok2([ _ | _ ], _):-
-    write("Token no reconocido"), nl, !.
-
 %Guardar el nombre del anime
 parser_tok2([Tok|Tokens], Tok2):-
     anadir(L),
@@ -393,26 +390,8 @@ parser_tok2([Tok|Tokens], Tok2):-
     %Aqui se envia Tokens por reconocer, nombre, num rating, num popularidad
     parser_tok4(Tokens, Tok, 0, 0).
 
-%Unificamos los valores del anime
-parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
-    Tok == "popularidad",
-    parser_tok4(Tokens, Nombre, Rat, Num).
-
-parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
-    Tok == "rating",
-    parser_tok4(Tokens, Nombre, Num, Pop).
-
-parser_tok4([Tok|[Generos | Tokens]], Nombre, Rat, Pop):-
-    Tok == "genero",
-    parser_tok5(Nombre, Generos, Rat, Pop).
-
-parser_tok5(Nombre, Generos, Rat, 0):-
-    addAnime(Nombre,Generos, Rat),
-    prettyWriteAnis(Nombre).
-
-parser_tok5(Nombre, Generos, Rat, Pop):-
-    addAnime(Nombre,Generos, Rat, Pop),
-    prettyWriteAnis(Nombre).
+parser_tok2([ _ | _ ], _):-
+    write("Token no reconocido"), nl, !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ordenados por rating
@@ -486,6 +465,30 @@ parser_tok3([Tok|[Tok2 | ["mayor" | ["menor"]]]], Genero):-
     find_gen_rat_pop(Genero,As),
     write("Del genero "), write(Genero), write(" ordenados por rating y popularidad de mayor a menor:"), 
     nl, prettyWriteAnis(As),nl, !.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Unificamos los valores del anime
+parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
+    Tok == "popularidad",
+    parser_tok4(Tokens, Nombre, Rat, Num).
+
+parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
+    Tok == "rating",
+    parser_tok4(Tokens, Nombre, Num, Pop).
+
+parser_tok4([Tok|[Generos | Tokens]], Nombre, Rat, Pop):-
+    Tok == "genero",
+    parser_tok5(Nombre, Generos, Rat, Pop).
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%Añadimos el anime segun si dieron la popularidad o no
+parser_tok5(Nombre, Generos, Rat, 0):-
+    addAnime(Nombre,Generos, Rat),
+    prettyWriteAnis(Nombre).
+
+parser_tok5(Nombre, Generos, Rat, Pop):-
+    addAnime(Nombre,Generos, Rat, Pop),
+    prettyWriteAnis(Nombre).
 
 %
 %parser_tok([Tok|Tokens]):-
