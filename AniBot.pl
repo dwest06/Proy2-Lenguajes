@@ -214,17 +214,28 @@ anadir(["añademe", "añade", "incluye", "añadir", "agrega","agregame", "agrega
 % Lectura de Bot
 readTokens:- 
     %Lee desde el stdin
-    current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t", Tokens), 
+    current_input(Stream), read_line_to_string(Stream, String), split_string(String, " \t", "\n\r\t", Tokens1), 
     % retorna los Tokens necesarios para el parseo
-    write("Tokens: "), write(Tokens), nl,
+    !, preprocesar_tok(Tokens1, Tokens),
+    % write("Tokens: "), write(Tokens), nl,
     !, procesar_tok(Tokens,[]), !.
+
+% Preprocesar Tokens para separar comas, exclamacion, puntos y preguntas
+
+preprocesar_tok([], []) :- !.
+preprocesar_tok([H|T], Tokens) :- 
+    re_split("(;|,|\\?|\\.|!|¿|¡|\\-)", H, R1), exclude(==(""), R1, R2), 
+    preprocesar_tok(T, Tokens2), !, append(R2, Tokens2, Tokens).
+
 
 %Procesamos los Tokens para filtrar las palabras claves.
 %Para salir del ciclo
 procesar_tok(["quit"],_) :- !.
 
 % Fin del primer procesamiento
-procesar_tok([],Z):- write(Z), nl, parser_tok(Z), main2.
+procesar_tok([],Z):- 
+    % write(Z), nl, 
+    parser_tok(Z), main2.
 
 %Para reconocer numeros
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -241,12 +252,12 @@ procesar_tok([Tok|Tokens],Tokneed):-
     procesar_tok(Tokens, R), !.
 
 %Para reconocer para anadir
-procesar_tok([Tok|Tokens],Tokneed):-
+procesar_tok([Tok|Tokens],_):-
     anadir(Q),
     string_lower(Tok, Tok1),
     member(Tok1, Q), !,
     %Vamos a una regla especial para leer el anime
-    procesar_tok2(["Agregar" | Tokens], R), !.
+    procesar_tok2(["Agregar" | Tokens], _), !.
 
 %Para reconocer cuando añadir
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -274,7 +285,9 @@ procesar_tok([_|Tokens], Tokneed):-
 
 % Fin del procesamiento de animes nuevos
 % TODO, ir a otro parser
-procesar_tok2([],Z):- write(Z), nl, parser_tok(["agrega"|Z]), main2.
+procesar_tok2([],Z):- 
+    % write(Z), nl, 
+    parser_tok(["agrega"|Z]), main2.
 
 %Para reconocer numeros de nuevos animes
 procesar_tok2([Tok|Tokens],Tokneed):-
@@ -285,7 +298,7 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 %Especial para reconocer Nombres de animes
 procesar_tok2([Tok|Tokens],Tokneed):-
     Tok == "Agregar",
-    write("Añadir nuevo anime"),nl,
+    %write("Añadir nuevo anime"),nl,
     recAnimeNuevo(Tokens, A, NextTokens),
     append(Tokneed, [A], R), !, 
     procesar_tok2(NextTokens, R), !.
@@ -294,8 +307,8 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 procesar_tok2([Tok|Tokens],Tokneed):-
     string_lower(Tok, Tok1),
     member(Tok1, ["genero", "generos"]),
-    write("Añadir nuevos generos"), nl,
-    write(Tokens), nl,
+    %write("Añadir nuevos generos"), nl,
+    %write(Tokens), nl,
     recGenerosNuevos(Tokens, GS, NextTokens),
     append(Tokneed, ["genero"], R1),
     append(R1, [GS], R), !,
@@ -305,7 +318,7 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 procesar_tok2([Tok|Tokens],Tokneed):-
     string_lower(Tok, Tok1),
     member(Tok1, ["rating"]),
-    write("Añadir nuevo rating"), nl,
+    %write("Añadir nuevo rating"), nl,
     append(Tokneed, ["rating"], R), !,
     procesar_tok2(Tokens, R), !.
 
@@ -313,7 +326,7 @@ procesar_tok2([Tok|Tokens],Tokneed):-
 procesar_tok2([Tok|Tokens],Tokneed):-
     string_lower(Tok, Tok1),
     member(Tok1, ["popularidad"]),
-    write("Añadir nueva popularidad"), nl,
+    %write("Añadir nueva popularidad"), nl,
     append(Tokneed, ["popularidad"], R), !,
     procesar_tok2(Tokens, R), !.
 
@@ -470,15 +483,15 @@ parser_tok3([Tok|[Tok2 | ["mayor" | ["menor"]]]], Genero):-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Unificamos los valores del anime
-parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
+parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, _):-
     Tok == "popularidad",
     parser_tok4(Tokens, Nombre, Rat, Num).
 
-parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
+parser_tok4([Tok|[Num | Tokens]], Nombre, _, Pop):-
     Tok == "rating",
     parser_tok4(Tokens, Nombre, Num, Pop).
 
-parser_tok4([Tok|[Generos | Tokens]], Nombre, Rat, Pop):-
+parser_tok4([Tok|[Generos | _]], Nombre, Rat, Pop):-
     Tok == "genero",
     parser_tok5(Nombre, Generos, Rat, Pop).
 
