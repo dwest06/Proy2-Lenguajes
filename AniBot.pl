@@ -243,10 +243,9 @@ procesar_tok([Tok|Tokens],Tokneed):-
 procesar_tok([Tok|Tokens],Tokneed):-
     anadir(Q),
     string_lower(Tok, Tok1),
-    member(Tok1, Q),
-    append(Tokneed, [Tok1], R),
+    member(Tok1, Q), !,
     %Vamos a una regla especial para leer el anime
-    procesar_tok2(Tokens, R), !.
+    procesar_tok2(["Agregar" | Tokens], R), !.
 
 %Para reconocer cuando añadir
 procesar_tok([Tok|Tokens],Tokneed):-
@@ -270,14 +269,57 @@ procesar_tok(Tokens,Tokneed):-
 
 %Para procesar palabras no reconocidas.
 procesar_tok([_|Tokens], Tokneed):- 
-    procesar_tok(Tokens, Tokneed), !.    
+    procesar_tok(Tokens, Tokneed), !.
+
+% Fin del procesamiento de animes nuevos
+% TODO, ir a otro parser
+procesar_tok2([],Z):- write(Z), nl, parser_tok(Z), main2.
+
+%Para reconocer numeros de nuevos animes
+procesar_tok2([Tok|Tokens],Tokneed):-
+    atom_number(Tok, _),
+    append(Tokneed, [Tok], R),
+    procesar_tok2(Tokens, R), !.
 
 %Especial para reconocer Nombres de animes
 procesar_tok2([Tok|Tokens],Tokneed):-
+    Tok == "Agregar",
     write("Añadir nuevo anime"),nl,
-    recAnimeNuevo(Tokens, Tok, NextTokens),
-    append(Tokneed, [Tok], R),
-    procesar_tok(NextTokens, R), !.
+    recAnimeNuevo(Tokens, A, NextTokens),
+    append(Tokneed, [A], R), !, 
+    procesar_tok2(NextTokens, R), !.
+
+%Especial para reconocer Generos de animes
+procesar_tok2([Tok|Tokens],Tokneed):-
+    write("Añadir nuevos generos"), nl,
+    string_lower(Tok, Tok1),
+    member(Tok1, ["genero", "generos"]),
+    recGenerosNuevos(Tokens, GS, NextTokens),
+    append(Tokneed, ["genero"], R1),
+    append(R1, [GS], R), !,
+    procesar_tok2(NextTokens, R), !.
+
+%Especial para reconocer rating de animes nuevos
+procesar_tok2([Tok|Tokens],Tokneed):-
+    write("Añadir nuevo rating"), nl,
+    string_lower(Tok, Tok1),
+    member(Tok1, ["rating"]),
+    append(Tokneed, ["rating"], R), !,
+    procesar_tok2(Tokens, R), !.
+
+%Especial para reconocer rating de animes nuevos
+procesar_tok2([Tok|Tokens],Tokneed):-
+    write("Añadir nueva popularidad"), nl,
+    string_lower(Tok, Tok1),
+    member(Tok1, ["popularidad"]),
+    append(Tokneed, ["popularidad"], R),
+    procesar_tok2(Tokens, R), !.
+
+%Para procesar palabras no reconocidas.
+procesar_tok2([_|Tokens], Tokneed):- 
+    procesar_tok2(Tokens, Tokneed), !. 
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Los Tokens filtrados pasan por "estados" para llegar a la queries indicada.
@@ -459,10 +501,10 @@ recAnimeNuevo(Tokens, A, NextTokens) :-
     append(Part, NextTokens1, Tokens), strSepCat(Part, " ", A), 
     NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas"]), !.
 
-% Reconoce un genero nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas", ","]
+% Reconoce un genero nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas", "," , "."]
 recGeneroNuevo(Tokens, G, NextTokens) :- 
     append(Part, NextTokens1, Tokens), strSepCat(Part, " ", G), 
-    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ","]), !.
+    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ",", "."]), !.
 
 % Reconoce una lista de generos nuevos de una lista de tokens que terminen en el ["y" , ","]
 recGenerosNuevos(Tokens, [G|T], NextTokens) :- 
