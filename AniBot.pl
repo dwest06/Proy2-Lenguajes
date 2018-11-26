@@ -506,11 +506,18 @@ recGeneroNuevo(Tokens, G, NextTokens) :-
     append(Part, NextTokens1, Tokens), strSepCat(Part, " ", G), 
     NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ",", "."]), !.
 
+recGeneroNuevo(Tokens, G, []) :- 
+    strSepCat(Tokens, " ", G), !.
+
 % Reconoce una lista de generos nuevos de una lista de tokens que terminen en el ["y" , ","]
+recGenerosNuevos([], [], []) :- !.
+
 recGenerosNuevos(Tokens, [G|T], NextTokens) :- 
     recGeneroNuevo(Tokens, G, NextTokens1), recGenerosNuevos(NextTokens1, T, NextTokens), !.
 
 recGenerosNuevos(NextTokens, [], NextTokens) :- !.
+
+
 
 % Pretty String de una lista de Generos
 prettyGens(Gs, S) :- 
