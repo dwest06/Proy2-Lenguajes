@@ -406,7 +406,8 @@ parser_tok2([Tok|Tokens], Genero):-
     nth0(0, Tokens, Num),
     atom_number(Num,R),
     find_rat_gen(R, Genero, As),
-    write("Del genero "), write(Genero), write(" :"), nl, prettyWriteAnis(As),nl, !.
+    write("Del genero "), write(Genero), write(" con rating "), write(R), write(":"), nl, 
+    prettyWriteAnis(As),nl, !.
 
 %lista de animes de genero Genero ordenados
 parser_tok2([Tok|Tokens], Genero):-
