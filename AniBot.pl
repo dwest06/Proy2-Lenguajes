@@ -383,8 +383,7 @@ parser_tok([Tok|Tokens]):-
 parser_tok([Tok| _ ]):-
     anime(Tok),
     preguntar_popularidad(Tok, _), !,
-    prettyAniFull(Tok, Z),
-    write(Z), nl.
+    prettyWriteAnis(Tok), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%
 %Animes buenos segun su popularidad
@@ -498,7 +497,7 @@ parser_tok3([Tok|[Tok2 | ["mayor" | ["menor"]]]], Genero):-
     nl, prettyWriteAnis(As),nl, !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Unificamos los valores del anime
+%Unificamos los valores del anime para poder se añadidos
 parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, _):-
     Tok == "popularidad",
     parser_tok4(Tokens, Nombre, Rat, Num).
@@ -522,17 +521,6 @@ parser_tok5(Nombre, Generos, Rat, Pop):-
     addAnime(Nombre,Generos, Rat, Pop),
     prettyAniFull(Nombre, Z),
     write("Se ha añadido "), write(Z), nl.
-
-%
-%parser_tok([Tok|Tokens]):-
-%    .
-
-%parser_tok([Tok|_]):-
-%    write("Token no reconocido"),nl.
-
-%parser_tok2([Tok|Tokens]):-
-%    .
-
 
 respuesta_generica:- random_between(0, 3, R), res_genericas(L), nth0(R, L, E), write(E), nl, !.
 
