@@ -309,6 +309,11 @@ parser_tok([Tok| _ ]):-
     prettyAniFull(Tok, Z),
     write(Z), nl.
 
+parser_tok([Tok|Tokens]):-
+    anadir(T),
+    member(Tok, T),
+    parser_tok2(Tokens, Tok), !.
+
 %%%%%%%%%%%%%%%%%%%%%%
 %Animes buenos segun su popularidad
 parser_tok2(_, Tok2):-
@@ -337,6 +342,34 @@ parser_tok2([Tok|Tokens], Genero):-
 
 parser_tok2([ _ | _ ], _):-
     write("Token no reconocido"), nl, !.
+
+%Guardar el nombre del anime
+parser_tok2([Tok|Tokens], Tok2):-
+    anadir(L),
+    member(Tok2, L),
+    %Aqui se envia Tokens por reconocer, nombre, num rating, num popularidad
+    parser_tok4(Tokens, Tok, 0, 0).
+
+%Unificamos los valores del anime
+parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
+    Tok == "popularidad",
+    parser_tok4(Tokens, Nombre, Rat, Num).
+
+parser_tok4([Tok|[Num | Tokens]], Nombre, Rat, Pop):-
+    Tok == "rating",
+    parser_tok4(Tokens, Nombre, Num, Pop).
+
+parser_tok4([Tok|[Generos | Tokens]], Nombre, Rat, Pop):-
+    Tok == "genero",
+    parser_tok5(Nombre, Generos, Rat, Pop).
+
+parser_tok5(Nombre, Generos, Rat, 0):-
+    addAnime(Nombre,Generos, Rat),
+    prettyWriteAnis(Nombre).
+
+parser_tok5(Nombre, Generos, Rat, Pop):-
+    addAnime(Nombre,Generos, Rat, Pop),
+    prettyWriteAnis(Nombre).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ordenados por rating
