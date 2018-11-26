@@ -500,12 +500,12 @@ parser_tok4([Tok|[Generos | _]], Nombre, Rat, Pop):-
 parser_tok5(Nombre, Generos, Rat, 0):-
     addAnime(Nombre,Generos, Rat),
     prettyAniFull(Nombre, Z),
-    write(Z), nl.
+    write("Se ha añadido "), write(Z), nl.
 
 parser_tok5(Nombre, Generos, Rat, Pop):-
     addAnime(Nombre,Generos, Rat, Pop),
     prettyAniFull(Nombre, Z),
-    write(Z), nl.
+    write("Se ha añadido "), write(Z), nl.
 
 %
 %parser_tok([Tok|Tokens]):-
