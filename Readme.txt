@@ -1,4 +1,4 @@
-# Universidad Simón Bolívar
+﻿# Universidad Simón Bolívar
 
 ## Proyecto 1 de Lenguajes
 
@@ -14,7 +14,7 @@ De Christian Oliveros 13-11000 y David Rodriguez 14-10930.
 
 El Bot provee de 9 predicacion principales
 
-* Preguntar_populridad: 
+* Preguntar_popularidad: 
 	Se usa implicitamente para aumentar la popularidad si el usuario pregunta 5 veces.
 
 * addAnime:
