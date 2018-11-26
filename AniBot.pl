@@ -232,6 +232,8 @@ preprocesar_tok([H|T], Tokens) :-
 %Para salir del ciclo
 procesar_tok(["quit"],_) :- !.
 procesar_tok(["salir"],_) :- !.
+procesar_tok(["Quit"],_) :- !.
+procesar_tok(["Salir"],_) :- !.
 
 % Fin del primer procesamiento
 procesar_tok([],Z):- 
