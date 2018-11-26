@@ -231,6 +231,7 @@ preprocesar_tok([H|T], Tokens) :-
 %Procesamos los Tokens para filtrar las palabras claves.
 %Para salir del ciclo
 procesar_tok(["quit"],_) :- !.
+procesar_tok(["salir"],_) :- !.
 
 % Fin del primer procesamiento
 procesar_tok([],Z):- 
@@ -552,12 +553,12 @@ recGenero(Tokens, G, NextTokens) :-
 % Reconoce un anime nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas"]
 recAnimeNuevo(Tokens, A, NextTokens) :- 
     append(Part, NextTokens1, Tokens), strSepCat(Part, " ", A), 
-    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas"]), !.
+    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ",", ".", "-"]), !.
 
 % Reconoce un genero nuevo de una lista de tokens que terminen en el ["de", "y", "con", "ademas", "," , "."]
 recGeneroNuevo(Tokens, G, NextTokens) :- 
     append(Part, NextTokens1, Tokens), strSepCat(Part, " ", G), 
-    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ",", "."]), !.
+    NextTokens1 = [H1|NextTokens], string_lower(H1, H2), member(H2, ["de", "y", "con", "ademas", ",", ".", "-"]), !.
 
 recGeneroNuevo(Tokens, G, []) :- 
     strSepCat(Tokens, " ", G), !.
@@ -574,19 +575,22 @@ recGenerosNuevos(NextTokens, [], NextTokens) :- !.
 
 % Pretty String de una lista de Generos
 prettyGens(Gs, S) :- 
-    strSepCat(Gs, ", ", S1), string_concat("[", S1, S2), string_concat(S2, "]", S), !.
+    strSepCat(Gs, ", ", S1), string_concat("", S1, S2), string_concat(S2, "", S), !.
 
 % Pretty String de toda la info de un anime
 prettyAniFull(A, S) :- 
     generoAnime(A, Gs), prettyGens(Gs, GString), 
     rating(A, R), atom_string(R, RString),
-    popularidad(A, P), popularidad_string(P, PString),
+    popularidad(A, P), popularidad_string(P, PString), atom_string(P, PStringShort),
     string_concat(A, " con Rating de ", S1),
     string_concat(S1, RString, S2),
     string_concat(S2, ", el cual es ", S3),
     string_concat(S3, PString, S4),
-    string_concat(S4, " y de los Generos ", S5),
-    string_concat(S5, GString, S), !.
+    string_concat(S4, " (", S5),
+    string_concat(S5, PStringShort, S6),
+    string_concat(S6, ")", S7),
+    string_concat(S7, " y de los Generos: ", S8),
+    string_concat(S8, GString, S), !.
 
 
 % Pretty String de toda la info de una lista de animes
